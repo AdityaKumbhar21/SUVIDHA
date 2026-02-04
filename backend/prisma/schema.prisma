@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// ENUMS
+
+
+enum Role {
+  CITIZEN
+  ADMIN
+}
+
+enum ConnectionType {
+  ELECTRICITY
+  GAS
+  WATER
+  WASTE
+  MUNICIPAL
+}
+
+enum Department {
+  ELECTRICITY
+  GAS
+  WATER
+  WASTE
+  MUNICIPAL
+}
+
+enum ComplaintType {
+  BILLING
+  OUTAGE
+  LEAKAGE
+  NO_SUPPLY
+  LOW_PRESSURE
+  METER_ISSUE
+  MISSED_PICKUP
+  OVERFLOW
+  CERTIFICATE
+  GENERAL
+}
+
+enum ComplaintStatus {
+  SUBMITTED
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  CRITICAL
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+// Models
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  mobile    String   @unique
+  name      String?
+  address   String?
+  cityWard  String?  @map("city_ward")
+  role      Role     @default(CITIZEN)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  utilityConnections UtilityConnection[]
+  complaints         Complaint[]
+  payments           Payment[]
+  notifications      Notification[]
+  feedbackGiven      Feedback[]   @relation("UserFeedback")
+  auditLogs          AuditLog[]
+
+  @@map("users")
+}
+
+
+model UtilityConnection {
+  id             String         @id @default(uuid()) @db.Uuid
+  userId         String         @db.Uuid
+  type           ConnectionType
+  consumerNumber String
+  createdAt      DateTime       @default(now())
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, consumerNumber])
+  @@map("utility_connections")
+}
+
+
+
+model Complaint {
+  id             String           @id @default(uuid()) @db.Uuid
+  userId         String           @db.Uuid
+  department     Department
+  complaintType  ComplaintType
+  description    String?
+  location       String?
+  photoUrl       String?          @map("photo_url")
+  status         ComplaintStatus  @default(SUBMITTED)
+  priority       Priority         @default(MEDIUM)
+  etaMinutes     Int?             @map("eta_minutes")
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment        Payment?
+  feedback       Feedback?
+
+  @@map("complaints")
+}
+
+
+
+model Payment {
+  id                    String         @id @default(uuid()) @db.Uuid
+  userId                String         @db.Uuid
+  complaintId           String?        @unique @db.Uuid
+  amountPaise           BigInt
+  stripePaymentIntentId String?        @unique @map("stripe_payment_intent_id")
+  status                PaymentStatus  @default(PENDING)
+  invoiceUrl            String?        @map("invoice_url")
+
+  createdAt             DateTime       @default(now())
+
+  user                  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  complaint             Complaint?     @relation(fields: [complaintId], references: [id], onDelete: SetNull)
+
+  @@map("payments")
+}
+
+
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  type      String
+  message   String
+  twilioSid String?  @map("twilio_sid")
+  status    String   @default("sent")
+  sentAt    DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+
+
+model Feedback {
+  id           String    @id @default(uuid()) @db.Uuid
+  complaintId  String    @unique@db.Uuid
+  userId       String    @db.Uuid
+  text         String
+  sentiment    String?
+
+  createdAt    DateTime  @default(now())
+
+  complaint    Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  user         User      @relation("UserFeedback", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("feedback")
+}
+
+
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  action    String
+  details   Json?
+  timestamp DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
