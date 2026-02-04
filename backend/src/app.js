@@ -1,0 +1,54 @@
+require('dotenv').config();
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const multer = require('multer');
+const errorMiddleware = require('./middleware/error');
+const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
+const complaintRoutes = require('./routes/complaint');
+
+
+
+
+const app = express();
+
+app.use(helmet());
+app.use(cors());
+app.use(morgan('dev'));
+app.use(express.json({ limit: '10mb' }));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+});
+app.use(limiter);
+
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only images and PDFs allowed'));
+    }
+  },
+});
+
+
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/complaints', complaintRoutes);
+
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+app.use(errorMiddleware);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`SUVIDHA backend running on port ${PORT}`);
+});
