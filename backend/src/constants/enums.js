@@ -1,0 +1,10 @@
+exports.Department = {
+  ELECTRICITY: 'ELECTRICITY',
+};
+
+exports.ComplaintType = {
+  OUTAGE: 'OUTAGE',
+  METER_ISSUE: 'METER_ISSUE',
+  LOAD_CHANGE: 'LOAD_CHANGE',
+  NEW_CONNECTION: 'NEW_CONNECTION',
+};
