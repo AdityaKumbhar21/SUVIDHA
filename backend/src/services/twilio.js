@@ -3,35 +3,77 @@ const prisma = require('../lib/prisma');
 
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
-const otpStore = new Map();
+const bcrypt = require('bcryptjs');
+const twilio = require('twilio');
+const prisma = require('../lib/prisma');
+const { BadRequestError } = require('../utils/customError');
+
+
+const OTP_EXPIRY_MINUTES = 5;
+const MAX_ATTEMPTS = 5;
+
+function normalizeMobile(mobile) {
+  return mobile.startsWith('+') ? mobile : `+91${mobile}`;
+}
 
 async function sendOtp(mobile) {
-  const cleanMobile = mobile.startsWith('+') ? mobile : `+91${mobile}`;
-
-  let entry = otpStore.get(cleanMobile) || { attempts: 0 };
-  if (entry.attempts >= 5) throw new Error('Too many OTP requests');
+  const cleanMobile = normalizeMobile(mobile);
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expires = Date.now() + 5 * 60 * 1000;
+  const otpHash = await bcrypt.hash(otp, 10);
+
+  await prisma.otp.deleteMany({ where: { mobile: cleanMobile } });
+
+  await prisma.otp.create({
+    data: {
+      mobile: cleanMobile,
+      otpHash,
+      expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000),
+    },
+  });
 
   await client.messages.create({
     from: 'whatsapp:+14155238886',
     to: `whatsapp:${cleanMobile}`,
-    body: `SUVIDHA OTP: ${otp} (valid 5 min)`,
+    body: `SUVIDHA OTP: ${otp} (valid ${OTP_EXPIRY_MINUTES} min)`,
+  });
+}
+
+async function verifyOtp(mobile, otp) {
+  const cleanMobile = normalizeMobile(mobile);
+
+  const record = await prisma.otp.findFirst({
+    where: { mobile: cleanMobile },
   });
 
-  otpStore.set(cleanMobile, { otp, expires, attempts: entry.attempts + 1 });
-  setTimeout(() => otpStore.delete(cleanMobile), 6 * 60 * 1000);
-}
+  if (!record) throw new BadRequestError('OTP not found');
 
-function verifyOtp(mobile, otp) {
-  const clean = mobile.startsWith('+') ? mobile : `+91${mobile}`;
-  const entry = otpStore.get(clean);
-  if (!entry || entry.expires < Date.now() || entry.otp !== otp) return false;
+  if (record.expiresAt < new Date()) {
+    await prisma.otp.delete({ where: { id: record.id } });
+    throw new BadRequestError('OTP expired');
+  }
 
-  otpStore.delete(clean);
+  if (record.attempts >= MAX_ATTEMPTS) {
+    await prisma.otp.delete({ where: { id: record.id } });
+    throw new BadRequestError('OTP locked due to too many attempts');
+  }
+
+  const valid = await bcrypt.compare(otp, record.otpHash);
+
+  if (!valid) {
+    await prisma.otp.update({
+      where: { id: record.id },
+      data: { attempts: { increment: 1 } },
+    });
+    return false;
+  }
+
+  await prisma.otp.delete({ where: { id: record.id } });
   return true;
 }
+
+module.exports = { sendOtp, verifyOtp };
+
 
 async function sendNotification(userId, message, type = 'update') {
   const user = await prisma.user.findUnique({

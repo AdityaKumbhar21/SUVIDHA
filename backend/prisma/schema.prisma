@@ -179,6 +179,17 @@ model Feedback {
   @@map("feedback")
 }
 
+model Otp {
+  id        String   @id @default(uuid())
+  mobile    String
+  otpHash   String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([mobile])
+  @@map("otps")
+}
 
 
 model AuditLog {
