@@ -9,6 +9,18 @@ const errorMiddleware = require('./middleware/error');
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const complaintRoutes = require('./routes/complaint');
+const electricityRoutes = require('./routes/departments/electricity');
+const gasRoutes = require('./routes/departments/gas');
+const waterRoutes = require('./routes/departments/water');
+const wasteRoutes = require('./routes/departments/waste');
+const municipalRoutes = require('./routes/departments/municipal');
+const profileRoutes = require('./routes/profile');
+const complaintRoutes = require('./routes/complaint');
+const paymentRoutes = require('./routes/payments');
+const electricityRoutes = require('./routes/departments/electricity');
+const adminComplaintRoutes = require('./routes/admin/complaints');
+
+
 
 
 
@@ -40,11 +52,27 @@ const upload = multer({
 });
 
 
+app.get('/health', (_req, res) => {
+  res.json({
+    status: 'OK',
+    service: 'SUVIDHA API',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
-app.use('/api/complaints', complaintRoutes);
+app.use('/api/complaint', complaintRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/electricity', electricityRoutes);
+app.use('/electricity', electricityRoutes);
+app.use('/gas', gasRoutes);
+app.use('/water', waterRoutes);
+app.use('/waste', wasteRoutes);
+app.use('/municipal', municipalRoutes);
+app.use('/admin/complaints', adminComplaintRoutes);
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
 
 app.use(errorMiddleware);
 
