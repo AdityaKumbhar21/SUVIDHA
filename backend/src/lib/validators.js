@@ -88,7 +88,56 @@ const getComplaintParams = z.object({
   id: z.string().uuid('Invalid complaint ID'),
 });
 
+const { z } = require('zod');
 
+billPaymentSchema = z.object({
+  consumerNumber: z.string().min(5).max(50),
+  amountPaise: z.number().int().positive().optional(),
+});
+
+outageComplaintSchema = z.object({
+  description: z.string().min(10).max(1000),
+  location: z.string().max(200).optional(),
+});
+
+meterIssueSchema = z.object({
+  description: z.string().min(10).max(1000),
+  consumerNumber: z.string().min(5).max(50).optional(),
+});
+
+loadChangeSchema = z.object({
+  requestedLoad: z.number().positive(),
+  currentLoad: z.number().positive().optional(),
+  reason: z.string().max(500),
+});
+
+newConnectionSchema = z.object({
+  address: z.string().min(10).max(500),
+  loadRequired: z.number().positive(),
+});
+
+const assignSchema = z.object({
+  officerName: z.string().min(2),
+});
+
+const statusSchema = z.object({
+  status: z.enum(['ASSIGNED', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']),
+  remarks: z.string().optional(),
+});
+
+const billSchema = z.object({
+  consumerNumber: z.string().min(5),
+  amountPaise: z.number().int().positive().optional(),
+});
+
+const leakageSchema = z.object({
+  description: z.string().min(10),
+  location: z.string().optional(),
+});
+
+const newConnectionSchema = z.object({
+  address: z.string().min(10),
+});
 
 module.exports = {
   sendOtpSchema,
@@ -98,4 +147,14 @@ module.exports = {
   validate,
   createComplaintSchema,
   getComplaintParams,
+  billPaymentSchema,
+  outageComplaintSchema,
+  meterIssueSchema,
+  loadChangeSchema,
+  newConnectionSchema,
+  assignSchema,
+  statusSchema,
+  billSchema,
+  leakageSchema,
+
 };
