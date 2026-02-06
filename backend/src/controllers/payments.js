@@ -2,6 +2,7 @@ const prisma = require('../lib/prisma');
 const { createPaymentIntent, constructWebhookEvent } = require('../services/stripe');
 const { sendNotification } = require('../services/twilio');
 const { z } = require('zod');
+const { generateReceipt } = require('../services/receipt');
 
 const createIntentSchema = z.object({
   amountPaise: z.number().int().positive(),
@@ -68,44 +69,107 @@ async function stripeWebhook(req, res) {
   const sig = req.headers['stripe-signature'];
 
   try {
+    
     const event = constructWebhookEvent(req.rawBody, sig);
 
-    if (event.type === 'payment_intent.succeeded') {
-      const intent = event.data.object;
+    
+    if (!event?.data?.object) {
+      return res.sendStatus(200);
+    }
 
-      // 1) Update payment
-      const payment = await prisma.payment.update({
+    const intent = event.data.object;
+
+    
+    const payment = await prisma.payment.findUnique({
+      where: { stripePaymentIntentId: intent.id },
+    });
+
+    
+    if (!payment) {
+      console.warn(`Payment not found for intent ${intent.id}`);
+      return res.sendStatus(200);
+    }
+
+    if (event.type === 'payment_intent.succeeded') {
+      
+
+      if (payment.status === 'SUCCESS') {
+        return res.sendStatus(200);
+      }
+
+     
+      const updatedPayment = await prisma.payment.update({
         where: { stripePaymentIntentId: intent.id },
-        data: {
-          status: 'SUCCESS',
-          invoiceUrl: `https://example.com/invoice/${intent.id}`, 
-        },
+        data: { status: 'SUCCESS' },
       });
 
       
-      if (payment.complaintId) {
+      const user = await prisma.user.findUnique({
+        where: { id: updatedPayment.userId },
+      });
+
+      if (!updatedPayment.invoiceUrl && user) {
+        const receiptUrl = await generateReceipt(updatedPayment, user);
+
+        await prisma.payment.update({
+          where: { id: updatedPayment.id },
+          data: { invoiceUrl: receiptUrl },
+        });
+      }
+
+     
+      if (updatedPayment.complaintId) {
         await prisma.complaint.update({
-          where: { id: payment.complaintId },
+          where: { id: updatedPayment.complaintId },
           data: { status: 'IN_PROGRESS' },
         });
       }
 
       
+      await prisma.auditLog.create({
+        data: {
+          userId: updatedPayment.userId,
+          action: 'PAYMENT_SUCCESS',
+          details: {
+            stripeIntentId: intent.id,
+            amountPaise: intent.amount,
+          },
+        },
+      });
+
+     
       if (intent.metadata?.userId) {
         await sendNotification(
           intent.metadata.userId,
-          `Payment successful!\nAmount: ₹${(intent.amount / 100).toFixed(2)}.\nThank you for using SUVIDHA.`,
+          `Payment successful!\nAmount: ₹${(intent.amount / 100).toFixed(
+            2
+          )}\nReceipt is available for download.`,
           'payment_success'
         );
       }
     }
 
+
     if (event.type === 'payment_intent.payment_failed') {
-      const intent = event.data.object;
+      // Idempotency guard
+      if (payment.status === 'FAILED') {
+        return res.sendStatus(200);
+      }
 
       await prisma.payment.update({
         where: { stripePaymentIntentId: intent.id },
         data: { status: 'FAILED' },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          userId: payment.userId,
+          action: 'PAYMENT_FAILED',
+          details: {
+            stripeIntentId: intent.id,
+            reason: intent.last_payment_error?.message,
+          },
+        },
       });
 
       if (intent.metadata?.userId) {
@@ -119,7 +183,7 @@ async function stripeWebhook(req, res) {
 
     return res.sendStatus(200);
   } catch (err) {
-    console.error('Webhook error:', err.message);
+    console.error('Stripe webhook error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 }
