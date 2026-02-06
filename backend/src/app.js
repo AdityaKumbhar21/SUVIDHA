@@ -7,7 +7,6 @@ const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const errorMiddleware = require('./middleware/error');
 const authRoutes = require('./routes/auth');
-const profileRoutes = require('./routes/profile');
 const complaintRoutes = require('./routes/complaint');
 const electricityRoutes = require('./routes/departments/electricity');
 const gasRoutes = require('./routes/departments/gas');
@@ -15,10 +14,10 @@ const waterRoutes = require('./routes/departments/water');
 const wasteRoutes = require('./routes/departments/waste');
 const municipalRoutes = require('./routes/departments/municipal');
 const profileRoutes = require('./routes/profile');
-const complaintRoutes = require('./routes/complaint');
 const paymentRoutes = require('./routes/payments');
-const electricityRoutes = require('./routes/departments/electricity');
 const adminComplaintRoutes = require('./routes/admin/complaints');
+const adminAnalyticsRoutes = require('./routes/admin/analytics');
+
 
 
 
@@ -60,6 +59,8 @@ app.get('/health', (_req, res) => {
   });
 });
 
+
+app.use(languageMiddleware);
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/complaint', complaintRoutes);
@@ -71,7 +72,7 @@ app.use('/water', waterRoutes);
 app.use('/waste', wasteRoutes);
 app.use('/municipal', municipalRoutes);
 app.use('/admin/complaints', adminComplaintRoutes);
-
+app.use('/admin/analytics', adminAnalyticsRoutes);
 
 
 app.use(errorMiddleware);
