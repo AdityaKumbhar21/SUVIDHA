@@ -7,6 +7,7 @@ const {
   raiseLowPressureComplaint,
   raiseWaterMeterIssue,
   requestNewWaterConnection,
+  getPendingBills,
 } = require('../../controllers/departments/water');
 
 const router = express.Router();
@@ -23,6 +24,7 @@ const upload = multer({
 });
 
 router.use(authMiddleware);
+router.get('/pending-bills', getPendingBills);
 router.post('/pay-bill', payWaterBill);
 router.post(
   '/complaints/no-supply',

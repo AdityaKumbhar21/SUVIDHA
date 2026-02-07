@@ -6,14 +6,14 @@ import { useLanguage } from '../../context/LanguageContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
-  // Unified Services Configuration to match Master Feature List [cite: 27, 36]
+  // Unified Services Configuration
   const services = [
     {
       id: 'electricity',
-      name: lang === 'en' ? 'Electricity' : 'बिजली',
-      sub: lang === 'en' ? 'Bill Pay & Outage Reports' : 'बिल भुगतान एवं कटौती रिपोर्ट',
+      name: t('electricity'),
+      sub: t('electricitySub'),
       icon: <Zap size={36} />,
       color: 'bg-[#10b981]',
       hoverBorder: 'hover:border-green-300',
@@ -21,8 +21,8 @@ const Dashboard = () => {
     },
     {
       id: 'water',
-      name: lang === 'en' ? 'Water Supply' : 'पानी आपूर्ति',
-      sub: lang === 'en' ? 'Supply Status & Billing' : 'आपूर्ति स्थिति एवं बिलिंग',
+      name: t('water'),
+      sub: t('waterSub'),
       icon: <Droplet size={36} />,
       color: 'bg-[#1e3a8a]',
       hoverBorder: 'hover:border-blue-400',
@@ -30,8 +30,8 @@ const Dashboard = () => {
     },
     {
       id: 'gas',
-      name: lang === 'en' ? 'Gas Services' : 'गैस सेवाएं',
-      sub: lang === 'en' ? 'Book Cylinder & Safety' : 'सिलेंडर बुकिंग एवं सुरक्षा',
+      name: t('gas'),
+      sub: t('gasSub'),
       icon: <Flame size={36} />,
       color: 'bg-[#f97316]',
       hoverBorder: 'hover:border-orange-300',
@@ -39,20 +39,19 @@ const Dashboard = () => {
     },
     {
       id: 'waste',
-      name: lang === 'en' ? 'Waste Mgmt.' : 'कचरा प्रबंधन',
-      sub: lang === 'en' ? 'Track Van & Pickup' : 'वाहन ट्रैकिंग एवं पिकअप',
+      name: t('waste'),
+      sub: t('wasteSub'),
       icon: <Trash2 size={36} />,
       color: 'bg-[#0d9488]',
       hoverBorder: 'hover:border-teal-300',
       path: '/service/waste'
     },
-    // ADDED: Municipal Services Module [cite: 41, 213]
     {
       id: 'municipal',
-      name: lang === 'en' ? 'Municipal' : 'नगर निगम',
-      sub: lang === 'en' ? 'Tax & Certificates' : 'कर एवं प्रमाण पत्र',
+      name: t('municipal'),
+      sub: t('municipalSub'),
       icon: <Building2 size={36} />,
-      color: 'bg-[#7c3aed]', // Purple theme for Municipal
+      color: 'bg-[#7c3aed]',
       hoverBorder: 'hover:border-purple-300',
       path: '/service/municipal'
     }
@@ -70,11 +69,11 @@ const Dashboard = () => {
           {/* Left: Headline & Search */}
           <div className="text-left z-10">
             <div className="inline-block bg-blue-100 text-[#1e3a8a] text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider mb-6">
-              Official Citizen Portal
+              {t('officialPortal')}
             </div>
             <h1 className="text-5xl md:text-6xl font-black text-[#1e3a8a] leading-[1.1] mb-6 uppercase tracking-tighter">
-              One Nation, One Portal <br />
-              <span className="text-orange-600">for Citizen Services</span>
+              {t('heroTitle1')} <br />
+              <span className="text-orange-600">{t('heroTitle2')}</span>
             </h1>
             
             {/* Search Bar - Intent Detection Ready [cite: 265, 266] */}
@@ -84,11 +83,11 @@ const Dashboard = () => {
                </div>
                <input 
                  type="text" 
-                 placeholder={lang === 'en' ? "Search 'Pay Bill', 'Trade License'..." : "शोधा 'बिल भरा', 'व्यापार परवाना'..."}
+                 placeholder={t('searchPlaceholder')}
                  className="flex-1 p-4 text-slate-700 font-medium outline-none text-base"
                />
                <button className="bg-[#1e3a8a] text-white px-8 py-3 rounded-lg font-bold text-sm tracking-wide">
-                 {lang === 'en' ? 'SEARCH' : 'शोधा'}
+                 {t('search')}
                </button>
             </div>
           </div>
@@ -120,14 +119,14 @@ const Dashboard = () => {
       {/* --- INITIATIVES SECTION [cite: 391, 403] --- */}
       <section className="bg-white py-20 px-6">
          <div className="max-w-6xl mx-auto text-center">
-            <p className="text-orange-600 font-bold tracking-[0.2em] uppercase text-[10px] mb-3">Kiosk Initiatives</p>
-            <h2 className="text-3xl font-black text-[#1e3a8a] mb-16 uppercase">Digital Governance Standard</h2>
+            <p className="text-orange-600 font-bold tracking-[0.2em] uppercase text-[10px] mb-3">{t('kioskInitiatives')}</p>
+            <h2 className="text-3xl font-black text-[#1e3a8a] mb-16 uppercase">{t('digitalGovernance')}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                {[
-                 { num: '1', title: 'Transparent Process', desc: 'Track every step of your application in real-time with zero manual intervention.' },
-                 { num: '2', title: 'Direct Benefit Transfer', desc: 'Subsidies are transferred directly to your Aadhaar-linked bank account.' },
-                 { num: '3', title: '24/7 Citizen Support', desc: 'AI assistant Suvidha is available around the clock to resolve your queries.' }
+                 { num: '1', title: t('transparentProcess'), desc: t('transparentDesc') },
+                 { num: '2', title: t('directBenefit'), desc: t('directBenefitDesc') },
+                 { num: '3', title: t('citizenSupport'), desc: t('citizenSupportDesc') }
                ].map((item, idx) => (
                  <div key={idx} className="p-8 border border-slate-100 rounded-3xl shadow-sm hover:shadow-xl transition-all bg-slate-50 text-left">
                     <div className="w-12 h-12 bg-[#1e3a8a] rounded-xl flex items-center justify-center mb-6 text-white font-black text-lg shadow-lg">{item.num}</div>

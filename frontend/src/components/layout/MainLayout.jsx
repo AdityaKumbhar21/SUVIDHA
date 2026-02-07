@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Layout, Bell, User, MessageSquare, X, Home, Grid, FileText, AlertTriangle } from 'lucide-react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Layout, Bell, User, MessageSquare, X, Home, Grid, FileText, AlertTriangle, LogOut } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import ChatWidget from '../chat/ChatWidget';
 
@@ -8,6 +8,7 @@ const MainLayout = () => {
   const { lang, toggleLanguage } = useLanguage();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Check if user is logged in
   const isLoggedIn = localStorage.getItem('token');
@@ -16,6 +17,15 @@ const MainLayout = () => {
   
   // Check if on auth pages
   const isAuthPage = location.pathname === '/' || location.pathname === '/auth' || location.pathname === '/auth/create-profile';
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userPhone');
+    localStorage.removeItem('userName');
+    sessionStorage.clear();
+    navigate('/');
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
@@ -80,6 +90,15 @@ const MainLayout = () => {
                     <User size={22} className="text-blue-200" />
                   </div>
                </div>
+
+               {/* Logout / EXIT Button */}
+               <button 
+                  onClick={handleLogout}
+                  className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 text-xs font-black rounded-full shadow-lg border border-red-400 active:scale-95 transition-all flex items-center gap-2"
+               >
+                  <LogOut size={14} />
+                  <span>{lang === 'en' ? 'EXIT' : 'बाहर'}</span>
+               </button>
              </>
            )}
         </div>
@@ -88,7 +107,7 @@ const MainLayout = () => {
       {/* =========================================
           2. MAIN CONTENT AREA
       ========================================= */}
-      <main className="flex-1 w-full flex flex-col">
+      <main className="flex-1 w-full overflow-y-auto">
         <Outlet />
       </main>
 

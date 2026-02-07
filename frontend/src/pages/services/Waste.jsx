@@ -2,31 +2,33 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trash2, Truck, Calendar, Recycle, ChevronLeft, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Waste = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const wasteServices = [
     {
       id: 'track-van',
-      name: 'Track Garbage Van',
-      sub: 'Live GPS location of pickup truck',
+      name: t('trackVan'),
+      sub: t('trackVanSub'),
       icon: <Truck size={32} />,
       gradient: 'from-emerald-500 to-green-600',
       path: '/service/waste/track'
     },
     {
       id: 'schedule-pickup',
-      name: 'Schedule Pickup',
-      sub: 'Request pickup for bulk waste',
+      name: t('schedulePickup'),
+      sub: t('schedulePickupSub'),
       icon: <Calendar size={32} />,
       gradient: 'from-green-600 to-teal-600',
       path: '/service/waste/schedule'
     },
     {
       id: 'recycle',
-      name: 'Recycling Centers',
-      sub: 'Find nearest e-waste drop location',
+      name: t('recyclingCenters'),
+      sub: t('recyclingCentersSub'),
       icon: <Recycle size={32} />,
       gradient: 'from-lime-500 to-green-600',
       path: '/service/waste/recycle'
@@ -40,8 +42,8 @@ const Waste = () => {
           <ChevronLeft size={24} />
         </button>
         <div>
-          <h1 className="text-3xl font-black text-[#1A365D] uppercase">Waste Management</h1>
-          <p className="text-slate-500 font-medium">Swachh Bharat Mission</p>
+          <h1 className="text-3xl font-black text-[#1A365D] uppercase">{t('wasteManagement')}</h1>
+          <p className="text-slate-500 font-medium">{t('wasteDept')}</p>
         </div>
       </div>
 

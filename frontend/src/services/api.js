@@ -79,6 +79,11 @@ export const paymentAPI = {
     });
   },
 
+  // Confirm a payment (kiosk flow)
+  confirmPayment: (paymentIntentId) => {
+    return api.post('/payment/confirm', { paymentIntentId });
+  },
+
   // Get all user payments
   getMyPayments: () => {
     return api.get('/payment/my');
@@ -90,11 +95,16 @@ export const paymentAPI = {
  */
 export const electricityAPI = {
   // Pay electricity bill
-  payBill: (customerId, amount) => {
+  payBill: (consumerNumber, amountPaise) => {
     return api.post('/electricity/pay-bill', {
-      customerId,
-      amount,
+      consumerNumber,
+      amountPaise,
     });
+  },
+
+  // Fetch pending bills for current user
+  getPendingBills: () => {
+    return api.get('/electricity/pending-bills');
   },
 
   // Report power outage
@@ -138,6 +148,11 @@ export const waterAPI = {
     });
   },
 
+  // Fetch pending bills for current user
+  getPendingBills: () => {
+    return api.get('/water/pending-bills');
+  },
+
   // Report no water supply
   reportNoSupply: (formData) => {
     return api.post('/water/complaints/no-supply', formData, {
@@ -172,11 +187,16 @@ export const waterAPI = {
  */
 export const gasAPI = {
   // Pay gas bill
-  payBill: (customerId, amount) => {
+  payBill: (consumerNumber, amountPaise) => {
     return api.post('/gas/pay-bill', {
-      customerId,
-      amount,
+      consumerNumber,
+      amountPaise,
     });
+  },
+
+  // Fetch pending bills for current user
+  getPendingBills: () => {
+    return api.get('/gas/pending-bills');
   },
 
   // Report gas leakage (emergency)

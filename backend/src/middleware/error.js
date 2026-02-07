@@ -1,11 +1,11 @@
-const { AppError } = require('../lib/customError');
+const { CustomError } = require('../lib/customError');
 
 function errorMiddleware(err, req, res, next) {
   console.error('Error:', err.message);
   
   // Handle custom app errors
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
+  if (err instanceof CustomError) {
+    return res.status(err.status).json({
       success: false,
       message: err.message,
     });

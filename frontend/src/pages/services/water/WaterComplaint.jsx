@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, MapPin, Navigation, CheckCircle, Loader2 } from 'lucide-react';
 import { waterAPI } from '../../../services/api';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const WaterComplaint = () => {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const [pinned, setPinned] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -62,8 +64,8 @@ const WaterComplaint = () => {
           <ChevronLeft size={24} />
         </button>
         <div>
-           <h1 className="text-2xl font-black text-slate-800">No Water Supply</h1>
-           <p className="text-slate-500 text-sm">Tap your location on the map</p>
+           <h1 className="text-2xl font-black text-slate-800">{lang === 'en' ? 'No Water Supply' : 'पानी की आपूर्ति'}</h1>
+           <p className="text-slate-500 text-sm">{lang === 'en' ? 'Tap your location on the map' : 'मैप पर अपना स्थान टैप करें'}</p>
         </div>
       </div>
 
@@ -82,7 +84,7 @@ const WaterComplaint = () => {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-xl flex items-center gap-2 animate-bounce">
               <Navigation size={20} className="text-blue-600" />
-              <span className="font-bold text-slate-700">Tap to Pin Location</span>
+              <span className="font-bold text-slate-700">{lang === 'en' ? 'Tap to Pin Location' : 'स्थान पिन करने के लिए टैप करें'}</span>
             </div>
           </div>
         )}
@@ -108,8 +110,8 @@ const WaterComplaint = () => {
             >
               <CheckCircle size={64} />
             </motion.div>
-            <h2 className="text-3xl font-black">Complaint Registered</h2>
-            <p className="font-medium opacity-90 mt-2">Team Dispatched to {location}</p>
+            <h2 className="text-3xl font-black">{lang === 'en' ? 'Complaint Registered' : 'शिकायत दर्ज'}</h2>
+            <p className="font-medium opacity-90 mt-2">{lang === 'en' ? `Team Dispatched to ${location}` : `${location} पर टीम भेजी गई`}</p>
           </div>
         )}
 
@@ -120,7 +122,7 @@ const WaterComplaint = () => {
         <div className="flex items-center gap-3">
           <div className={`w-3 h-3 rounded-full ${pinned ? 'bg-green-500' : 'bg-slate-300'}`}></div>
           <span className="text-sm font-bold text-slate-600">
-            {pinned ? `Location Selected: ${location}` : "Waiting for selection..."}
+            {pinned ? (lang === 'en' ? `Location Selected: ${location}` : `स्थान चयनित: ${location}`) : (lang === 'en' ? "Waiting for selection..." : "चयन की प्रतीक्षा...")}
           </span>
         </div>
 
@@ -132,10 +134,10 @@ const WaterComplaint = () => {
           {submitting ? (
             <>
               <Loader2 size={20} className="animate-spin" />
-              Submitting...
+              {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}
             </>
           ) : (
-            'Confirm & Report'
+            lang === 'en' ? 'Confirm & Report' : 'पुष्टि करें और रिपोर्ट करें'
           )}
         </button>
       </div>

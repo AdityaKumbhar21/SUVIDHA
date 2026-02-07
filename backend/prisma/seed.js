@@ -1,7 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const DEMO_MOBILE = '+919876543210';
+const DEMO_MOBILE = '+919028432689';
+const DEMO_CONSUMER_NUMBER = '202456789012';
 
 async function main() {
   const existingUser = await prisma.user.findUnique({
@@ -32,7 +33,7 @@ async function main() {
     data: {
       userId: user.id,
       type: 'ELECTRICITY',
-      consumerNumber: 'MHEB-2024-567890',
+      consumerNumber: DEMO_CONSUMER_NUMBER,
     },
   });
 
@@ -47,6 +48,8 @@ async function main() {
   });
 
   console.log("Data seeded successfully");
+  console.log("Demo Consumer Number:", DEMO_CONSUMER_NUMBER);
+  console.log("Pending Bill: ₹1,865.00");
   
 }
 

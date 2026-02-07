@@ -7,6 +7,7 @@ const {
   raiseMeterIssue,
   requestLoadChange,
   requestNewConnection,
+  getPendingBills,
 } = require('../../controllers/departments/electricity');
 
 const router = express.Router();
@@ -26,7 +27,7 @@ const upload = multer({
 
 router.use(authMiddleware);
 
-
+router.get('/pending-bills', getPendingBills);
 router.post('/pay-bill', payBill);
 router.post(
   '/complaints/outage',

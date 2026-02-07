@@ -7,7 +7,7 @@
 body {
   /* Vibrant Deep Gradient Background */
   background: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(219, 228, 255) 90%);
-  @apply text-slate-900 font-sans select-none overflow-hidden min-h-screen;
+  @apply text-slate-900 font-sans select-none min-h-screen;
 }
 
 @layer components {

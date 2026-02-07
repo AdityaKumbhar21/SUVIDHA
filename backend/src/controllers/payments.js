@@ -43,6 +43,103 @@ async function createPaymentIntentHandler(req, res, next) {
 }
 
 
+/**
+ * Confirm a payment by paymentIntentId.
+ * For kiosk flow: marks the PENDING payment as SUCCESS and returns receipt data.
+ * In production this would be handled exclusively by the Stripe webhook.
+ */
+async function confirmPayment(req, res, next) {
+  try {
+    const { paymentIntentId } = req.body;
+
+    if (!paymentIntentId) {
+      return res.status(400).json({ message: 'paymentIntentId is required' });
+    }
+
+    const payment = await prisma.payment.findUnique({
+      where: { stripePaymentIntentId: paymentIntentId },
+    });
+
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
+
+    if (payment.userId !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    if (payment.status === 'SUCCESS') {
+      return res.json({
+        payment: {
+          id: payment.id,
+          amountPaise: Number(payment.amountPaise),
+          status: payment.status,
+          invoiceUrl: payment.invoiceUrl,
+          createdAt: payment.createdAt,
+          stripePaymentIntentId: payment.stripePaymentIntentId,
+        },
+      });
+    }
+
+    // Mark payment as SUCCESS
+    const updatedPayment = await prisma.payment.update({
+      where: { stripePaymentIntentId: paymentIntentId },
+      data: { status: 'SUCCESS' },
+    });
+
+    // Generate receipt
+    const user = await prisma.user.findUnique({
+      where: { id: updatedPayment.userId },
+    });
+
+    let invoiceUrl = null;
+    if (user) {
+      try {
+        invoiceUrl = await generateReceipt(updatedPayment, user);
+        await prisma.payment.update({
+          where: { id: updatedPayment.id },
+          data: { invoiceUrl },
+        });
+      } catch (receiptErr) {
+        console.error('Receipt generation failed:', receiptErr.message);
+      }
+    }
+
+    // Audit log
+    await prisma.auditLog.create({
+      data: {
+        userId: updatedPayment.userId,
+        action: 'PAYMENT_SUCCESS',
+        details: {
+          stripeIntentId: paymentIntentId,
+          amountPaise: Number(updatedPayment.amountPaise),
+        },
+      },
+    });
+
+    // Notify user
+    await sendNotification(
+      updatedPayment.userId,
+      `Payment successful! Amount: ₹${(Number(updatedPayment.amountPaise) / 100).toFixed(2)}`,
+      'payment_success'
+    );
+
+    res.json({
+      payment: {
+        id: updatedPayment.id,
+        amountPaise: Number(updatedPayment.amountPaise),
+        status: 'SUCCESS',
+        invoiceUrl,
+        createdAt: updatedPayment.createdAt,
+        stripePaymentIntentId: paymentIntentId,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 async function getMyPayments(req, res, next) {
   try {
     const payments = await prisma.payment.findMany({
@@ -58,7 +155,13 @@ async function getMyPayments(req, res, next) {
       },
     });
 
-    res.json({ payments });
+    // Convert BigInt to Number for JSON serialization
+    const serialized = payments.map(p => ({
+      ...p,
+      amountPaise: Number(p.amountPaise),
+    }));
+
+    res.json({ payments: serialized });
   } catch (err) {
     next(err);
   }
@@ -191,6 +294,7 @@ async function stripeWebhook(req, res) {
 
 module.exports = {
   createPaymentIntentHandler,
+  confirmPayment,
   getMyPayments,
   stripeWebhook,
 };

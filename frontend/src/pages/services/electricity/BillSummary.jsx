@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, CreditCard, Download, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, CreditCard, ShieldCheck } from 'lucide-react';
+import { profileAPI } from '../../../services/api';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const BillSummary = () => {
   const navigate = useNavigate();
-  const [processing, setProcessing] = useState(false);
+  const { t } = useLanguage();
+  const [error, setError] = useState('');
+  const [profile, setProfile] = useState(null);
 
-  // Dummy Bill Data (In real app, this comes from the backend)
+  // Read bill data from sessionStorage (set by BillPayment page)
+  const storedBill = JSON.parse(sessionStorage.getItem('billData') || '{}');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await profileAPI.getProfile();
+        setProfile(res.data);
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const billDetails = {
-    consumerName: "Rahul S. Deshmukh",
-    consumerId: "1234 5678 9012",
-    billDate: "05 Feb 2026",
-    dueDate: "20 Feb 2026",
-    units: "145 Units",
-    amount: "1,450.00",
-    address: "Flat 402, Sai Heights, Kothrud, Pune - 411038"
+    consumerName: profile?.name || 'Loading...',
+    consumerId: storedBill.consumerId || '—',
+    billDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+    dueDate: new Date(Date.now() + 15 * 86400000).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+    units: '145 Units',
+    amount: storedBill.amountRupees || '0.00',
+    address: profile?.address || 'Loading...',
+    cityWard: profile?.cityWard || '',
   };
 
-  const handlePay = () => {
-    setProcessing(true);
-    // Simulate Payment Processing
-    setTimeout(() => {
-      navigate('/service/electricity/success'); // We will build this next
-    }, 2000);
+  const handleProceedToPay = () => {
+    if (!storedBill.paymentIntentId) {
+      setError('No payment data found. Please go back and try again.');
+      return;
+    }
+    navigate('/service/electricity/card-payment');
   };
 
   return (
@@ -37,7 +56,7 @@ const BillSummary = () => {
         >
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-xl font-black text-[#1A365D]">Bill Summary</h1>
+        <h1 className="text-xl font-black text-[#1A365D]">{t('billSummary')}</h1>
       </div>
 
       {/* THE DIGITAL BILL CARD */}
@@ -63,42 +82,43 @@ const BillSummary = () => {
           
           <div className="flex justify-between border-b border-slate-100 pb-4">
             <div>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Consumer Name</p>
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{t('consumerName')}</p>
               <p className="text-lg font-bold text-slate-800">{billDetails.consumerName}</p>
             </div>
             <div className="text-right">
-               <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Consumer No.</p>
+               <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{t('consumerNo')}</p>
                <p className="text-lg font-mono font-bold text-slate-600">{billDetails.consumerId}</p>
             </div>
           </div>
 
           <div>
-             <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Billing Address</p>
+             <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">{t('billingAddress')}</p>
              <p className="text-sm font-medium text-slate-600">{billDetails.address}</p>
+             {billDetails.cityWard && <p className="text-xs text-slate-500 mt-1">{billDetails.cityWard}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl">
              <div>
-                <p className="text-xs text-slate-400 font-bold">Bill Date</p>
+                <p className="text-xs text-slate-400 font-bold">{t('billDate')}</p>
                 <p className="font-semibold text-slate-700">{billDetails.billDate}</p>
              </div>
              <div>
-                <p className="text-xs text-slate-400 font-bold">Due Date</p>
+                <p className="text-xs text-slate-400 font-bold">{t('dueDate')}</p>
                 <p className="font-semibold text-red-600">{billDetails.dueDate}</p>
              </div>
              <div>
-                <p className="text-xs text-slate-400 font-bold">Units Consumed</p>
+                <p className="text-xs text-slate-400 font-bold">{t('unitsConsumed')}</p>
                 <p className="font-semibold text-slate-700">{billDetails.units}</p>
              </div>
              <div>
-                <p className="text-xs text-slate-400 font-bold">Tariff</p>
+                <p className="text-xs text-slate-400 font-bold">{t('tariff')}</p>
                 <p className="font-semibold text-slate-700">LT-1 Residential</p>
              </div>
           </div>
 
           {/* Total Amount */}
           <div className="flex justify-between items-center pt-2">
-            <span className="text-xl font-bold text-slate-800">Total Payable</span>
+            <span className="text-xl font-bold text-slate-800">{t('totalPayable')}</span>
             <span className="text-4xl font-black text-[#1A365D]">₹ {billDetails.amount}</span>
           </div>
 
@@ -107,21 +127,17 @@ const BillSummary = () => {
         {/* Action Button */}
         <div className="p-6 bg-slate-50 border-t border-slate-100">
           <button 
-            onClick={handlePay}
-            disabled={processing}
+            onClick={handleProceedToPay}
             className="w-full py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
           >
-            {processing ? (
-              <span className="animate-pulse">Processing Payment...</span>
-            ) : (
-              <>
-                <CreditCard size={20} /> Pay Bill Now
-              </>
-            )}
+            <CreditCard size={20} /> {t('payBillNow')}
           </button>
           <p className="text-center text-xs text-slate-400 mt-3 flex items-center justify-center gap-1">
-            <ShieldCheck size={12} /> Secure Transaction via Stripe/UPI
+            <ShieldCheck size={12} /> {t('secureTransaction')}
           </p>
+          {error && (
+            <p className="text-center text-sm text-red-600 font-bold mt-3 animate-pulse">{error}</p>
+          )}
         </div>
 
       </motion.div>

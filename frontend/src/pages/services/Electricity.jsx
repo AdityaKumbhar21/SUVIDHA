@@ -5,47 +5,49 @@ import {
   Receipt, PlusCircle, AlertTriangle, 
   ZapOff, Settings2, ChevronLeft, ArrowRight 
 } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Electricity = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const electricityServices = [
     {
       id: 'pay-bill',
-      name: 'Bill Payment',
-      sub: 'Pay your monthly bill instantly',
+      name: t('billPayment'),
+      sub: t('billPaymentSub'),
       icon: <Receipt size={32} />,
       gradient: 'from-amber-400 to-orange-600',
       path: '/service/electricity/pay'
     },
     {
       id: 'outage',
-      name: 'Power Outage',
-      sub: 'Report a blackout in your area',
+      name: t('powerOutage'),
+      sub: t('powerOutageSub'),
       icon: <ZapOff size={32} />,
       gradient: 'from-red-500 to-rose-700',
       path: '/service/electricity/outage'
     },
     {
       id: 'new-conn',
-      name: 'New Connection',
-      sub: 'Apply for a new domestic meter',
+      name: t('newConnection'),
+      sub: t('newConnectionSub'),
       icon: <PlusCircle size={32} />,
       gradient: 'from-blue-500 to-indigo-700',
       path: '/service/electricity/new'
     },
     {
       id: 'meter-issue',
-      name: 'Meter Issue',
-      sub: 'Report faulty or fast meters',
+      name: t('meterIssue'),
+      sub: t('meterIssueSub'),
       icon: <AlertTriangle size={32} />,
       gradient: 'from-orange-500 to-red-600',
       path: '/service/electricity/meter'
     },
     {
       id: 'load-change',
-      name: 'Load Change',
-      sub: 'Increase or decrease sanctioned load',
+      name: t('loadChange'),
+      sub: t('loadChangeSub'),
       icon: <Settings2 size={32} />,
       gradient: 'from-slate-600 to-slate-800',
       path: '/service/electricity/load'
@@ -64,8 +66,8 @@ const Electricity = () => {
           <ChevronLeft size={24} />
         </button>
         <div>
-          <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">Electricity Services</h1>
-          <p className="text-slate-500 font-medium">Department of Power • Govt. of India</p>
+          <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">{t('electricityServices')}</h1>
+          <p className="text-slate-500 font-medium">{t('deptOfPower')}</p>
         </div>
       </div>
 
@@ -109,8 +111,8 @@ const Electricity = () => {
           <AlertTriangle size={24} />
         </div>
         <div>
-          <h4 className="font-bold text-blue-900 text-sm">Emergency Helpline: 1912</h4>
-          <p className="text-blue-700 text-xs font-medium">Available 24/7 for electrical emergencies and safety reports.</p>
+          <h4 className="font-bold text-blue-900 text-sm">{t('emergencyHelpline')}</h4>
+          <p className="text-blue-700 text-xs font-medium">{t('emergencyHelplineDesc')}</p>
         </div>
       </div>
 

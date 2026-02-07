@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Mic, MapPin, Camera, Send, AlertTriangle, Loader2 } from 'lucide-react';
 import { electricityAPI } from '../../../services/api';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const OutageComplaint = () => {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const [location, setLocation] = useState('Detecting Location...');
   const [recording, setRecording] = useState(false);
   const [description, setDescription] = useState('');
@@ -15,7 +17,7 @@ const OutageComplaint = () => {
   // Simulate GPS Location Detection
   useEffect(() => {
     setTimeout(() => {
-      setLocation('Kothrud, Pune (Ward 12)');
+      setLocation(lang === 'en' ? 'Kothrud, Pune (Ward 12)' : 'कोथरुड, पुणे (वार्ड 12)');
     }, 2000);
   }, []);
 
@@ -55,11 +57,11 @@ const OutageComplaint = () => {
       const response = await electricityAPI.reportOutage(formData);
       
       const complaintId = response.data.complaintId || 'PWR-SUBMITTED';
-      alert(`Complaint Registered! Ticket #${complaintId}`);
+      alert(lang === 'en' ? `Complaint Registered! Ticket #${complaintId}` : `शिकायत दर्ज! टिकट #${complaintId}`);
       navigate('/dashboard');
     } catch (err) {
       console.error('Error submitting complaint:', err);
-      alert(err.response?.data?.message || 'Failed to submit complaint. Please try again.');
+      alert(err.response?.data?.message || (lang === 'en' ? 'Failed to submit complaint. Please try again.' : 'शिकायत दर्ज करने में विफल। कृपया पुनः प्रयास करें।'));
       setSubmitting(false);
     }
   };
@@ -77,9 +79,9 @@ const OutageComplaint = () => {
         </button>
         <div>
            <h1 className="text-2xl font-black text-slate-800 flex items-center gap-2">
-             <AlertTriangle className="text-red-500" /> Report Outage
+             <AlertTriangle className="text-red-500" /> {lang === 'en' ? 'Report Outage' : 'बिजली कटौती की शिकायत'}
            </h1>
-           <p className="text-slate-500 text-sm">AI-Assisted Complaint System</p>
+           <p className="text-slate-500 text-sm">{lang === 'en' ? 'AI-Assisted Complaint System' : 'AI-सहायता प्राप्त शिकायत प्रणाली'}</p>
         </div>
       </div>
 
@@ -91,7 +93,7 @@ const OutageComplaint = () => {
             {location === 'Detecting Location...' ? <Loader2 className="animate-spin" size={20}/> : <MapPin size={20} />}
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Affected Location</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Affected Location' : 'प्रभावित स्थान'}</p>
             <p className="text-slate-800 font-bold">{location}</p>
           </div>
         </div>
@@ -109,7 +111,7 @@ const OutageComplaint = () => {
               <Mic size={32} className="text-white" />
             </button>
             <p className="mt-3 text-sm font-bold text-slate-500">
-              {recording ? "Listening..." : "Tap to Speak Issue"}
+              {recording ? (lang === 'en' ? "Listening..." : "सुन रहे हैं...") : (lang === 'en' ? "Tap to Speak Issue" : "समस्या बोलने के लिए टैप करें")}
             </p>
           </div>
 
@@ -119,14 +121,14 @@ const OutageComplaint = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={submitting}
-              placeholder="Or type your complaint here..."
+              placeholder={lang === 'en' ? "Or type your complaint here..." : "या यहां अपनी शिकायत टाइप करें..."}
               className="w-full h-32 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-blue-500 focus:outline-none resize-none disabled:opacity-50"
             ></textarea>
           </div>
 
           {/* Photo Upload */}
           <label className="flex items-center justify-center gap-2 w-full py-4 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 font-bold hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50">
-            <Camera size={20} /> {photoFile ? 'Photo Selected' : 'Upload Photo of Issue (Optional)'}
+            <Camera size={20} /> {photoFile ? (lang === 'en' ? 'Photo Selected' : 'फोटो चुनी गई') : (lang === 'en' ? 'Upload Photo of Issue (Optional)' : 'समस्या की फोटो अपलोड करें (वैकल्पिक)')}
             <input 
               type="file" 
               accept="image/*" 
@@ -146,9 +148,9 @@ const OutageComplaint = () => {
             className="w-full py-4 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (
-              <> <Loader2 className="animate-spin" /> Submitting... </>
+              <> <Loader2 className="animate-spin" /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'} </>
             ) : (
-              <> <Send size={20} /> Submit Complaint </>
+              <> <Send size={20} /> {lang === 'en' ? 'Submit Complaint' : 'शिकायत दर्ज करें'} </>
             )}
           </button>
         </div>

@@ -14,32 +14,32 @@ const Water = () => {
   const waterServices = [
     {
       id: 'pay-bill',
-      name: t('payBill') || 'Pay Water Bill',
-      sub: 'Clear your municipal water dues',
+      name: t('payWaterBill'),
+      sub: t('payWaterBillSub'),
       icon: <FileText size={32} />,
       gradient: 'from-blue-500 to-cyan-600',
       path: '/service/water/pay'
     },
     {
       id: 'no-supply',
-      name: 'No Water Supply',
-      sub: 'Report total water stoppage',
+      name: t('noWaterSupply'),
+      sub: t('noWaterSupplySub'),
       icon: <Droplet size={32} />,
       gradient: 'from-sky-500 to-indigo-600',
       path: '/service/water/complaint'
     },
     {
       id: 'leakage',
-      name: 'Report Leakage',
-      sub: 'Pipe bursts or street leakage',
+      name: t('reportLeakage'),
+      sub: t('reportLeakageSub'),
       icon: <Wrench size={32} />,
       gradient: 'from-teal-500 to-emerald-600',
       path: '/service/water/leakage'
     },
     {
       id: 'quality',
-      name: 'Water Quality',
-      sub: 'Dirty or contaminated water',
+      name: t('waterQuality'),
+      sub: t('waterQualitySub'),
       icon: <AlertCircle size={32} />,
       gradient: 'from-indigo-500 to-purple-600',
       path: '/service/water/quality'
@@ -59,9 +59,9 @@ const Water = () => {
         </button>
         <div>
           <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">
-            {t('water')}
+            {t('waterServices')}
           </h1>
-          <p className="text-slate-500 font-medium">Municipal Services • Govt. of India</p>
+          <p className="text-slate-500 font-medium">{t('waterDept')}</p>
         </div>
       </div>
 

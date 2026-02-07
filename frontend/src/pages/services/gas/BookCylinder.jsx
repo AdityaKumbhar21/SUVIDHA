@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Flame, Truck, CheckCircle, Package, Loader } from 'lucide-react';
 import { gasAPI } from '../../../services/api';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const BookCylinder = () => {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const [provider, setProvider] = useState('indane');
   const [bookingStatus, setBookingStatus] = useState('idle'); // idle, booking, success
   const [refId, setRefId] = useState('');
@@ -31,7 +33,7 @@ const BookCylinder = () => {
       }, 4000);
     } catch (err) {
       console.error('Error booking cylinder:', err);
-      alert(err.response?.data?.message || 'Failed to book cylinder. Please try again.');
+      alert(err.response?.data?.message || (lang === 'en' ? 'Failed to book cylinder. Please try again.' : 'सिलेंडर बुक करने में विफल। कृपया पुनः प्रयास करें।'));
       setBookingStatus('idle');
     }
   };
@@ -48,8 +50,8 @@ const BookCylinder = () => {
           <ChevronLeft size={24} />
         </button>
         <div>
-           <h1 className="text-2xl font-black text-slate-800">Book Cylinder Refill</h1>
-           <p className="text-slate-500 text-sm">Select provider & confirm</p>
+           <h1 className="text-2xl font-black text-slate-800">{lang === 'en' ? 'Book Cylinder Refill' : 'सिलेंडर रिफिल बुक करें'}</h1>
+           <p className="text-slate-500 text-sm">{lang === 'en' ? 'Select provider & confirm' : 'प्रदाता चुनें और पुष्टि करें'}</p>
         </div>
       </div>
 
@@ -73,8 +75,8 @@ const BookCylinder = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <h2 className="text-3xl font-black text-green-800 mb-2">Booking Confirmed!</h2>
-              <p className="text-green-700 font-medium">Your cylinder will be delivered in 2 days.</p>
+              <h2 className="text-3xl font-black text-green-800 mb-2">{lang === 'en' ? 'Booking Confirmed!' : 'बुकिंग की पुष्टि!'}</h2>
+              <p className="text-green-700 font-medium">{lang === 'en' ? 'Your cylinder will be delivered in 2 days.' : 'आपका सिलेंडर 2 दिनों में डिलीवर होगा।'}</p>
               <div className="mt-6 bg-white px-4 py-2 rounded-full border border-green-200 text-xs font-mono text-green-600">
                 Ref ID: {refId}
               </div>
@@ -85,7 +87,7 @@ const BookCylinder = () => {
           <div className="p-8 h-full flex flex-col">
             
             {/* Provider Selection */}
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Select Provider</h3>
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">{lang === 'en' ? 'Select Provider' : 'प्रदाता चुनें'}</h3>
             <div className="grid grid-cols-3 gap-4 mb-8">
               {['indane', 'hp', 'bharat'].map((p) => (
                 <button
@@ -107,15 +109,15 @@ const BookCylinder = () => {
             {/* Consumer Details (Static for Demo) */}
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-8 space-y-3">
               <div className="flex justify-between">
-                <span className="text-xs font-bold text-slate-400 uppercase">Consumer Name</span>
+                <span className="text-xs font-bold text-slate-400 uppercase">{lang === 'en' ? 'Consumer Name' : 'उपभोक्ता नाम'}</span>
                 <span className="font-bold text-slate-700">Rahul Deshmukh</span>
               </div>
               <div className="flex justify-between">
-                 <span className="text-xs font-bold text-slate-400 uppercase">Registered Mobile</span>
+                 <span className="text-xs font-bold text-slate-400 uppercase">{lang === 'en' ? 'Registered Mobile' : 'पंजीकृत मोबाइल'}</span>
                  <span className="font-bold text-slate-700">+91 98****1234</span>
               </div>
               <div className="flex justify-between">
-                 <span className="text-xs font-bold text-slate-400 uppercase">Price (14.2kg)</span>
+                 <span className="text-xs font-bold text-slate-400 uppercase">{lang === 'en' ? 'Price (14.2kg)' : 'कीमत (14.2kg)'}</span>
                  <span className="font-bold text-slate-700">₹ 903.00</span>
               </div>
             </div>
@@ -129,11 +131,11 @@ const BookCylinder = () => {
               {bookingStatus === 'booking' ? (
                 <>
                   <Loader size={20} className="animate-spin" />
-                  <span className="animate-pulse">Processing Booking...</span>
+                  <span className="animate-pulse">{lang === 'en' ? 'Processing Booking...' : 'बुकिंग प्रक्रिया जारी...'}</span>
                 </>
               ) : (
                 <>
-                  <Package size={20} /> Book Now (Pay on Delivery)
+                  <Package size={20} /> {lang === 'en' ? 'Book Now (Pay on Delivery)' : 'अभी बुक करें (डिलीवरी पर भुगतान)'}
                 </>
               )}
             </button>

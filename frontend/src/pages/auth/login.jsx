@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Smartphone, ArrowRight, ShieldCheck, KeyRound, Loader } from 'lucide-react'; // Added KeyRound icon
+import { Smartphone, ArrowRight, ShieldCheck, KeyRound, Loader, UserCheck, MapPin, Phone, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { authAPI } from '../../services/api';
 
@@ -9,12 +9,13 @@ const Login = () => {
   const navigate = useNavigate();
   const { lang } = useLanguage();
   
-  // State for 2-Step Login
-  const [step, setStep] = useState(1); // 1 = Mobile, 2 = OTP
+  // State for 3-Step Login
+  const [step, setStep] = useState(1); // 1 = Mobile, 2 = OTP, 3 = Profile Confirmation
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [userData, setUserData] = useState(null);
 
   // Handle Mobile Input (10 digits max)
   const handleMobileChange = (e) => {
@@ -58,8 +59,15 @@ const Login = () => {
             localStorage.setItem('userId', response.data.userId);
             localStorage.setItem('userPhone', '+91' + mobile);
             
-            // Navigate to profile creation or dashboard
-            navigate('/auth/create-profile');
+            // Check if profile is complete
+            if (response.data.isProfileComplete) {
+              // Existing user with complete profile → show confirmation
+              setUserData(response.data.user);
+              setStep(3);
+            } else {
+              // New user or incomplete profile → go to profile creation
+              navigate('/auth/create-profile');
+            }
           } else {
             setError(response.data.message || (lang === 'en' ? 'Invalid OTP' : 'अमान्य OTP'));
           }
@@ -92,7 +100,9 @@ const Login = () => {
         <div className="flex justify-center mb-8">
            <div className="bg-blue-50 p-5 rounded-full">
               {/* Change Icon based on Step */}
-              {step === 1 ? <Smartphone size={40} className="text-[#1e3a8a]" /> : <KeyRound size={40} className="text-[#1e3a8a]" />}
+              {step === 1 ? <Smartphone size={40} className="text-[#1e3a8a]" /> 
+               : step === 2 ? <KeyRound size={40} className="text-[#1e3a8a]" />
+               : <UserCheck size={40} className="text-[#1e3a8a]" />}
            </div>
         </div>
 
@@ -101,12 +111,16 @@ const Login = () => {
           <h1 className="text-4xl font-black text-[#1e3a8a] mb-3">
             {step === 1 
               ? (lang === 'en' ? 'Citizen Login' : 'नागरिक लॉगिन') 
-              : (lang === 'en' ? 'Verify OTP' : 'OTP सत्यापित करें')}
+              : step === 2 
+              ? (lang === 'en' ? 'Verify OTP' : 'OTP सत्यापित करें')
+              : (lang === 'en' ? 'Welcome Back!' : 'वापसी पर स्वागत!')}
           </h1>
           <p className="text-slate-500 font-medium text-base">
             {step === 1 
               ? (lang === 'en' ? 'Secure Access via Mobile OTP' : 'मोबाइल OTP द्वारा सुरक्षित प्रवेश')
-              : (lang === 'en' ? `OTP Sent to +91 ${mobile}` : `+91 ${mobile} पर OTP भेजा गया`)}
+              : step === 2
+              ? (lang === 'en' ? `OTP Sent to +91 ${mobile}` : `+91 ${mobile} पर OTP भेजा गया`)
+              : (lang === 'en' ? 'Confirm your identity to continue' : 'जारी रखने के लिए अपनी पहचान की पुष्टि करें')}
           </p>
         </div>
 
@@ -175,9 +189,52 @@ const Login = () => {
              </motion.div>
           )}
 
+          {/* STEP 3: PROFILE CONFIRMATION */}
+          {step === 3 && userData && (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+              <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl p-6 border border-blue-100 space-y-4">
+                <div className="flex items-center gap-3 pb-3 border-b border-blue-100">
+                  <div className="bg-green-100 p-2 rounded-full">
+                    <CheckCircle size={20} className="text-green-600" />
+                  </div>
+                  <p className="font-bold text-green-700 text-sm">
+                    {lang === 'en' ? 'Profile Found' : 'प्रोफ़ाइल मिली'}
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <UserCheck size={18} className="text-slate-400" />
+                    <div>
+                      <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'en' ? 'Name' : 'नाम'}</p>
+                      <p className="text-lg font-black text-slate-800">{userData.name}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Phone size={18} className="text-slate-400" />
+                    <div>
+                      <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'en' ? 'Mobile' : 'मोबाइल'}</p>
+                      <p className="text-lg font-black text-slate-800">{userData.mobile}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <MapPin size={18} className="text-slate-400" />
+                    <div>
+                      <p className="text-xs text-slate-400 font-bold uppercase">{lang === 'en' ? 'Address' : 'पता'}</p>
+                      <p className="text-sm font-bold text-slate-700">{userData.address}</p>
+                      {userData.cityWard && <p className="text-xs text-slate-500 mt-1">{userData.cityWard}</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* MAIN ACTION BUTTON */}
           <button 
-            onClick={handleAuth}
+            onClick={step === 3 ? () => navigate('/dashboard') : handleAuth}
             disabled={loading}
             className="w-full bg-[#1e3a8a] hover:bg-blue-900 disabled:bg-blue-800 text-white py-5 rounded-2xl font-bold text-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-70 mt-4"
           >
@@ -190,7 +247,9 @@ const Login = () => {
               <>
                 {step === 1 
                   ? (lang === 'en' ? 'SEND OTP' : 'OTP भेजें') 
-                  : (lang === 'en' ? 'VERIFY & LOGIN' : 'सत्यापित करें और लॉगिन करें')}
+                  : step === 2 
+                  ? (lang === 'en' ? 'VERIFY & LOGIN' : 'सत्यापित करें और लॉगिन करें')
+                  : (lang === 'en' ? 'CONTINUE TO DASHBOARD' : 'डैशबोर्ड पर जाएं')}
                 <ArrowRight size={20} />
               </>
             )}

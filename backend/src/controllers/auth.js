@@ -28,13 +28,27 @@ const verifyOtpHandler = [
       const isValid = await verifyOtp(mobile, otp);
       if (!isValid) throw new UnauthorizedError('Invalid OTP');
 
-      let user = await prisma.user.findUnique({ where: { mobile } });
+      let user = await prisma.user.findUnique({
+        where: { mobile },
+        select: {
+          id: true,
+          mobile: true,
+          name: true,
+          address: true,
+          cityWard: true,
+          role: true,
+        },
+      });
 
+      let isNewUser = false;
       if (!user) {
         user = await prisma.user.create({
           data: { mobile, role: 'CITIZEN' },
         });
+        isNewUser = true;
       }
+
+      const isProfileComplete = !!(user.name && user.address);
 
       const token = jwt.sign(
         { id: user.id, role: user.role, mobile: user.mobile },
@@ -46,6 +60,15 @@ const verifyOtpHandler = [
         success: true,
         token,
         userId: user.id,
+        isNewUser,
+        isProfileComplete,
+        user: {
+          name: user.name,
+          mobile: user.mobile,
+          address: user.address,
+          cityWard: user.cityWard,
+          role: user.role,
+        },
         message: 'Authentication successful',
       });
     } catch (err) {

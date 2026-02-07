@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Truck, MapPin, Clock, Phone } from 'lucide-react';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const TrackVan = () => {
   const navigate = useNavigate();
+  const { lang } = useLanguage();
   const [eta, setEta] = useState(15); // Minutes
   const [status, setStatus] = useState("On the way");
 
@@ -28,8 +30,8 @@ const TrackVan = () => {
           <ChevronLeft size={24} />
         </button>
         <div>
-           <h1 className="text-2xl font-black text-slate-800">Live Van Tracking</h1>
-           <p className="text-slate-500 text-sm">Vehicle: MH-14-GT-9988</p>
+           <h1 className="text-2xl font-black text-slate-800">{lang === 'en' ? 'Live Van Tracking' : 'लाइव वैन ट्रैकिंग'}</h1>
+           <p className="text-slate-500 text-sm">{lang === 'en' ? 'Vehicle: MH-14-GT-9988' : 'वाहन: MH-14-GT-9988'}</p>
         </div>
       </div>
 
@@ -70,7 +72,7 @@ const TrackVan = () => {
             <div className="w-4 h-4 bg-blue-500 rounded-full animate-ping absolute top-0 left-0"></div>
             <MapPin size={32} className="text-blue-600 relative z-10 -ml-2 -mt-4 drop-shadow-lg" />
             <div className="absolute top-8 -left-8 bg-white px-3 py-1 rounded-full shadow-md text-xs font-bold whitespace-nowrap">
-              Your Home
+              {lang === 'en' ? 'Your Home' : 'आपका घर'}
             </div>
           </div>
         </div>
@@ -103,8 +105,8 @@ const TrackVan = () => {
                <Clock size={24} />
              </div>
              <div>
-               <p className="text-xs font-bold text-slate-400 uppercase">Estimated Arrival</p>
-               <h3 className="text-xl font-black text-slate-800">{eta} Mins</h3>
+               <p className="text-xs font-bold text-slate-400 uppercase">{lang === 'en' ? 'Estimated Arrival' : 'अनुमानित आगमन'}</p>
+               <h3 className="text-xl font-black text-slate-800">{eta} {lang === 'en' ? 'Mins' : 'मिनट'}</h3>
              </div>
           </div>
           

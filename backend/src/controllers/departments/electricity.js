@@ -28,13 +28,49 @@ async function payBill(req, res, next) {
         consumerNumber,
       });
 
+    // Check if there's an existing PENDING payment without a stripe ID (e.g. seeded bill)
+    // If so, update it instead of creating a duplicate
+    let payment;
+    const existingPending = await prisma.payment.findFirst({
+      where: {
+        userId: req.user.id,
+        status: 'PENDING',
+        stripePaymentIntentId: null,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existingPending) {
+      payment = await prisma.payment.update({
+        where: { id: existingPending.id },
+        data: {
+          amountPaise: finalAmount,
+          stripePaymentIntentId: paymentIntentId,
+        },
+      });
+    } else {
+      payment = await prisma.payment.create({
+        data: {
+          userId: req.user.id,
+          amountPaise: finalAmount,
+          stripePaymentIntentId: paymentIntentId,
+          status: 'PENDING',
+        },
+      });
+    }
+
     await sendNotification(
       req.user.id,
       `Electricity bill payment initiated for ${consumerNumber}.`,
       'payment_initiated'
     );
 
-    res.json({ clientSecret, paymentIntentId });
+    res.json({
+      clientSecret,
+      paymentIntentId,
+      paymentId: payment.id,
+      amountPaise: Number(finalAmount),
+    });
   } catch (err) {
     next(err);
   }
@@ -178,10 +214,53 @@ async function requestNewConnection(req, res, next) {
   }
 }
 
+
+async function getPendingBills(req, res, next) {
+  try {
+    const userId = req.user.id;
+
+    // Get user's electricity connections
+    const connections = await prisma.utilityConnection.findMany({
+      where: { userId, type: 'ELECTRICITY' },
+      select: { consumerNumber: true },
+    });
+
+    // Get pending payments for this user
+    const pendingPayments = await prisma.payment.findMany({
+      where: {
+        userId,
+        status: 'PENDING',
+      },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        amountPaise: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({
+      connections: connections.map(c => c.consumerNumber),
+      pendingBills: pendingPayments.map(p => ({
+        id: p.id,
+        amountPaise: Number(p.amountPaise),
+        amountRupees: (Number(p.amountPaise) / 100).toFixed(2),
+        status: p.status,
+        createdAt: p.createdAt,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 module.exports = {
   payBill,
   raiseOutageComplaint,
   raiseMeterIssue,
   requestLoadChange,
   requestNewConnection,
+  getPendingBills,
 };

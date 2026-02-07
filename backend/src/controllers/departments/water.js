@@ -165,10 +165,38 @@ async function requestNewWaterConnection(req, res, next) {
   }
 }
 
+async function getPendingBills(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const connections = await prisma.utilityConnection.findMany({
+      where: { userId, type: 'WATER' },
+      select: { consumerNumber: true },
+    });
+    const pendingPayments = await prisma.payment.findMany({
+      where: { userId, status: 'PENDING' },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, amountPaise: true, status: true, createdAt: true },
+    });
+    res.json({
+      connections: connections.map(c => c.consumerNumber),
+      pendingBills: pendingPayments.map(p => ({
+        id: p.id,
+        amountPaise: Number(p.amountPaise),
+        amountRupees: (Number(p.amountPaise) / 100).toFixed(2),
+        status: p.status,
+        createdAt: p.createdAt,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   payWaterBill,
   raiseNoWaterComplaint,
   raiseLowPressureComplaint,
   raiseWaterMeterIssue,
   requestNewWaterConnection,
+  getPendingBills,
 };

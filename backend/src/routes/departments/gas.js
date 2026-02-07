@@ -6,6 +6,7 @@ const {
   raiseGasLeakageComplaint,
   raiseCylinderIssue,
   requestNewGasConnection,
+  getPendingBills,
 } = require('../../controllers/departments/gas');
 
 const router = express.Router();
@@ -23,6 +24,7 @@ const upload = multer({
 
 router.use(authMiddleware);
 
+router.get('/pending-bills', getPendingBills);
 router.post('/pay-bill', payGasBill);
 
 

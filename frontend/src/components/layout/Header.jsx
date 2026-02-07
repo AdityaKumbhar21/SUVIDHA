@@ -1,9 +1,22 @@
 import React from 'react';
-import { Shield, Menu } from 'lucide-react';
+import { Shield, LogOut } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
 const Header = () => {
   const { lang, toggleLanguage } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Show logout only when user is logged in (not on welcome/auth pages)
+  const isLoggedIn = !['/','', '/auth'].includes(location.pathname);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userPhone');
+    navigate('/');
+  };
 
   return (
     <div className="w-full shadow-md relative z-50">
@@ -47,6 +60,17 @@ const Header = () => {
               <span>{lang === 'en' ? 'A' : 'अ'}</span>
               <span>{lang === 'en' ? 'हिंदी' : 'English'}</span>
            </button>
+
+           {/* Logout Button - Only visible when logged in */}
+           {isLoggedIn && (
+             <button 
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 text-xs font-black rounded-full shadow-lg border border-red-400 active:scale-95 transition-all flex items-center gap-2"
+             >
+                <LogOut size={14} />
+                <span>{lang === 'en' ? 'EXIT' : 'बाहर'}</span>
+             </button>
+           )}
         </div>
       </div>
       

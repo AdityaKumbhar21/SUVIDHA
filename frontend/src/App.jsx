@@ -24,6 +24,7 @@ import Feedback from './pages/services/Feedback';
 import Electricity from './pages/services/Electricity';
 import BillPayment from './pages/services/electricity/BillPayment';
 import BillSummary from './pages/services/electricity/BillSummary';
+import CardPayment from './pages/services/electricity/CardPayment';
 import PaymentSuccess from './pages/services/electricity/PaymentSuccess';
 import OutageComplaint from './pages/services/electricity/OutageComplaint';
 
@@ -71,6 +72,7 @@ const AnimatedRoutes = () => {
           <Route path="service/electricity" element={<PageTransition><Electricity /></PageTransition>} />
           <Route path="service/electricity/pay" element={<PageTransition><BillPayment /></PageTransition>} />
           <Route path="service/electricity/summary" element={<PageTransition><BillSummary /></PageTransition>} />
+          <Route path="service/electricity/card-payment" element={<PageTransition><CardPayment /></PageTransition>} />
           <Route path="service/electricity/success" element={<PageTransition><PaymentSuccess /></PageTransition>} />
           <Route path="service/electricity/outage" element={<PageTransition><OutageComplaint /></PageTransition>} />
 
