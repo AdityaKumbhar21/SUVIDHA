@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* Vibrant Deep Gradient Background */
+  background: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(219, 228, 255) 90%);
+  @apply text-slate-900 font-sans select-none overflow-hidden min-h-screen;
+}
+
+@layer components {
+  /* Glassmorphism Panel */
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-2xl;
+  }
+
+  /* Kiosk Standard Button 
+     NOTE: We use hex #1A365D instead of 'from-gov-navy' to prevent build errors 
+  */
+  .btn-primary {
+    @apply bg-gradient-to-r from-[#1A365D] to-blue-800 text-white font-bold 
+           uppercase tracking-wider py-4 px-8 rounded-xl shadow-lg 
+           active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Input Fields */
+  .input-field {
+    @apply w-full bg-white/80 border-2 border-slate-200 text-slate-800 text-2xl font-bold 
+           p-4 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100 
+           transition-all placeholder:text-slate-400;
+  }
+}
+
+@layer utilities {
+  /* Animated Gradient Text */
+  .text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #1A365D, #2457A7, #1A365D);
+  }
+}

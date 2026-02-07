@@ -1,15 +1,18 @@
 const jwt = require('jsonwebtoken');
 const prisma = require('../lib/prisma');
 const { sendOtp, verifyOtp } = require('../services/otp');
-const { validate, sendOtpSchema, verifyOtpSchema } = require('../utils/validators');
-const { UnauthorizedError } = require('../utils/customError');
+const { validate, sendOtpSchema, verifyOtpSchema } = require('../lib/validators');
+const { UnauthorizedError } = require('../lib/customError');
 
 const sendOtpHandler = [
   validate(sendOtpSchema),
   async (req, res, next) => {
     try {
       await sendOtp(req.validated.mobile);
-      res.json({ message: 'OTP sent successfully' });
+      res.json({ 
+        success: true,
+        message: 'OTP sent successfully' 
+      });
     } catch (err) {
       next(err);
     }
@@ -40,8 +43,10 @@ const verifyOtpHandler = [
       );
 
       res.json({
+        success: true,
         token,
-        user: { id: user.id, mobile: user.mobile, role: user.role },
+        userId: user.id,
+        message: 'Authentication successful',
       });
     } catch (err) {
       next(err);

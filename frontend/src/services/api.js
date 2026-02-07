@@ -1,0 +1,330 @@
+import api from '../api/axios';
+
+/**
+ * AUTH SERVICES
+ */
+export const authAPI = {
+  // Send OTP to mobile number
+  sendOtp: (phone) => {
+    return api.post('/auth/send-otp', { phone });
+  },
+
+  // Verify OTP and authenticate user
+  verifyOtp: (phone, otp) => {
+    return api.post('/auth/verify-otp', { phone, otp });
+  },
+
+  // Logout (clear token)
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userPhone');
+  },
+};
+
+/**
+ * PROFILE SERVICES
+ */
+export const profileAPI = {
+  // Get current user profile
+  getProfile: () => {
+    return api.get('/profile');
+  },
+
+  // Update user profile
+  updateProfile: (data) => {
+    return api.patch('/profile', data);
+  },
+
+  // Add utility connection (electricity, water, gas, etc.)
+  addConnection: (connectionData) => {
+    return api.post('/profile/connections', connectionData);
+  },
+};
+
+/**
+ * COMPLAINT SERVICES
+ */
+export const complaintAPI = {
+  // Create a general complaint
+  createComplaint: (formData) => {
+    return api.post('/complaint', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Get all user complaints
+  getMyComplaints: () => {
+    return api.get('/complaint/my');
+  },
+
+  // Get complaint details
+  getComplaintById: (complaintId) => {
+    return api.get(`/complaint/${complaintId}`);
+  },
+};
+
+/**
+ * PAYMENT SERVICES
+ */
+export const paymentAPI = {
+  // Create a Stripe payment intent
+  createPaymentIntent: (amount, service, billId) => {
+    return api.post('/payment/create-intent', {
+      amount,
+      service,
+      billId,
+    });
+  },
+
+  // Get all user payments
+  getMyPayments: () => {
+    return api.get('/payment/my');
+  },
+};
+
+/**
+ * ELECTRICITY SERVICES
+ */
+export const electricityAPI = {
+  // Pay electricity bill
+  payBill: (customerId, amount) => {
+    return api.post('/electricity/pay-bill', {
+      customerId,
+      amount,
+    });
+  },
+
+  // Report power outage
+  reportOutage: (formData) => {
+    return api.post('/electricity/complaints/outage', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Report meter issue
+  reportMeterIssue: (formData) => {
+    return api.post('/electricity/complaints/meter', formData);
+  },
+
+  // Request load change
+  requestLoadChange: (data) => {
+    return api.post('/electricity/requests/load-change', data);
+  },
+
+  // Request new connection
+  requestNewConnection: (formData) => {
+    return api.post('/electricity/requests/new-connection', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+};
+
+/**
+ * WATER SERVICES
+ */
+export const waterAPI = {
+  // Pay water bill
+  payBill: (customerId, amount) => {
+    return api.post('/water/pay-bill', {
+      customerId,
+      amount,
+    });
+  },
+
+  // Report no water supply
+  reportNoSupply: (formData) => {
+    return api.post('/water/complaints/no-supply', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Report low pressure
+  reportLowPressure: (data) => {
+    return api.post('/water/complaints/low-pressure', data);
+  },
+
+  // Report meter issue
+  reportMeterIssue: (data) => {
+    return api.post('/water/complaints/meter', data);
+  },
+
+  // Request new connection
+  requestNewConnection: (formData) => {
+    return api.post('/water/requests/new-connection', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+};
+
+/**
+ * GAS SERVICES
+ */
+export const gasAPI = {
+  // Pay gas bill
+  payBill: (customerId, amount) => {
+    return api.post('/gas/pay-bill', {
+      customerId,
+      amount,
+    });
+  },
+
+  // Report gas leakage (emergency)
+  reportLeakage: (phone, location) => {
+    return api.post('/gas/complaints/leakage', {
+      phone,
+      location,
+      description: 'Gas leak emergency',
+    });
+  },
+
+  // Report cylinder issue
+  reportCylinderIssue: (data) => {
+    return api.post('/gas/complaints/cylinder', data);
+  },
+
+  // Request new connection
+  requestNewConnection: (formData) => {
+    return api.post('/gas/requests/new-connection', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Book cylinder
+  bookCylinder: (data) => {
+    return api.post('/gas/requests/new-connection', data); // Reusing the same endpoint
+  },
+};
+
+/**
+ * WASTE MANAGEMENT SERVICES
+ */
+export const wasteAPI = {
+  // Report missed pickup
+  reportMissedPickup: (formData) => {
+    return api.post('/waste/complaints/missed-pickup', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Report overflowing bin
+  reportOverflow: (formData) => {
+    return api.post('/waste/complaints/overflow', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Report dead animal
+  reportDeadAnimal: (formData) => {
+    return api.post('/waste/complaints/dead-animal', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Request bulk pickup
+  requestBulkPickup: (data) => {
+    return api.post('/waste/requests/bulk-pickup', data);
+  },
+};
+
+/**
+ * MUNICIPAL SERVICES
+ */
+export const municipalAPI = {
+  // Pay property tax
+  payPropertyTax: (propertyId, amount) => {
+    return api.post('/municipal/pay-property-tax', {
+      propertyId,
+      amount,
+    });
+  },
+
+  // Request birth certificate
+  requestBirthCertificate: (formData) => {
+    return api.post('/municipal/certificates/birth', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Request death certificate
+  requestDeathCertificate: (formData) => {
+    return api.post('/municipal/certificates/death', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  // Submit municipal grievance
+  submitGrievance: (formData) => {
+    return api.post('/municipal/complaints/grievance', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+};
+
+/**
+ * ADMIN SERVICES
+ */
+export const adminAPI = {
+  // Get complaint statistics
+  getComplaintStats: () => {
+    return api.get('/admin/analytics/complaints');
+  },
+
+  // Get SLA statistics
+  getSlaStats: () => {
+    return api.get('/admin/analytics/sla');
+  },
+
+  // Get payment statistics
+  getPaymentStats: () => {
+    return api.get('/admin/analytics/payments');
+  },
+
+  // List all complaints
+  listComplaints: (filters = {}) => {
+    return api.get('/admin/complaints', { params: filters });
+  },
+
+  // Get complaint details
+  getComplaintDetails: (complaintId) => {
+    return api.get(`/admin/complaints/${complaintId}`);
+  },
+
+  // Assign complaint to officer
+  assignComplaint: (complaintId, assignedTo) => {
+    return api.put(`/admin/complaints/${complaintId}/assign`, {
+      assignedTo,
+    });
+  },
+
+  // Update complaint status
+  updateComplaintStatus: (complaintId, status) => {
+    return api.put(`/admin/complaints/${complaintId}/status`, {
+      status,
+    });
+  },
+};
