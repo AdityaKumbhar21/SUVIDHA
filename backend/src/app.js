@@ -14,13 +14,10 @@ const waterRoutes = require('./routes/departments/water');
 const wasteRoutes = require('./routes/departments/waste');
 const municipalRoutes = require('./routes/departments/municipal');
 const profileRoutes = require('./routes/profile');
-const paymentRoutes = require('./routes/payments');
+const paymentRoutes = require('./routes/payment');
 const adminComplaintRoutes = require('./routes/admin/complaint');
 const adminAnalyticsRoutes = require('./routes/admin/analytics');
 const { languageMiddleware } = require('./middleware/language');
-
-
-
 
 
 

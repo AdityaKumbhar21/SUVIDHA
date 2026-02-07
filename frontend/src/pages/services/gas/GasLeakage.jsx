@@ -10,7 +10,7 @@ const GasLeakage = () => {
   const { lang } = useLanguage();
   const [showWarning, setShowWarning] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [location, setLocation] = useState('Shaniwar Peth, Pune, Maharashtra 411030');
+  const [location, setLocation] = useState('Connaught Place, New Delhi 110001');
   const [photoFile, setPhotoFile] = useState(null);
   const [userPhone, setUserPhone] = useState('');
 
@@ -31,17 +31,20 @@ const GasLeakage = () => {
     setIsSubmitting(true);
     
     try {
-      // Call the API to report gas leakage
-      const response = await gasAPI.reportLeakage(userPhone, location);
-      
-      if (response.data.success) {
-        const ticketId = response.data.ticketId || 'GAS-EMG-911';
-        alert(lang === 'EN' ? `EMERGENCY: Team Dispatched. ID: ${ticketId}` : `आणीबाणी: टीम रवाना झाली. आयडी: ${ticketId}`);
-        navigate('/dashboard');
-      } else {
-        alert(response.data.message || 'Failed to submit emergency alert');
-        setIsSubmitting(false);
+      // Create FormData for gas leakage report
+      const formData = new FormData();
+      formData.append('description', 'Gas leak emergency - immediate attention required');
+      formData.append('location', location);
+      if (photoFile) {
+        formData.append('photo', photoFile);
       }
+
+      // Call the API to report gas leakage
+      const response = await gasAPI.reportLeakage(formData);
+      
+      const complaintId = response.data.complaintId || 'GAS-EMG-911';
+      alert(lang === 'en' ? `EMERGENCY: Team Dispatched. ID: ${complaintId}` : `आपातकालीन: टीम भेजी गई। आईडी: ${complaintId}`);
+      navigate('/dashboard');
     } catch (err) {
       console.error('Error submitting gas leakage report:', err);
       alert(err.response?.data?.message || 'Failed to submit emergency alert. Please try again.');
@@ -67,18 +70,18 @@ const GasLeakage = () => {
                 <AlertTriangle size={48} className="text-red-600 animate-pulse" />
               </div>
               <h2 className="text-3xl font-black text-red-600 mb-4 uppercase">
-                {lang === 'EN' ? 'Safety Warning' : 'सुरक्षा सूचना'}
+                {lang === 'en' ? 'Safety Warning' : 'सुरक्षा सूचना'}
               </h2>
               <ul className="text-left space-y-3 text-slate-700 font-bold mb-8">
-                <li className="flex gap-2">⚠️ {lang === 'EN' ? 'Do not use mobile phones near the leak.' : 'गळतीजवळ मोबाईल फोन वापरू नका.'}</li>
-                <li className="flex gap-2">⚠️ {lang === 'EN' ? 'Do not switch on/off any electrical appliances.' : 'कोणतीही विद्युत उपकरणे चालू/बंद करू नका.'}</li>
-                <li className="flex gap-2">⚠️ {lang === 'EN' ? 'Open all windows and doors.' : 'सर्व खिडक्या आणि दरवाजे उघडा.'}</li>
+                <li className="flex gap-2">⚠️ {lang === 'en' ? 'Do not use mobile phones near the leak.' : 'गळतीजवळ मोबाईल फोन वापरू नका.'}</li>
+                <li className="flex gap-2">⚠️ {lang === 'en' ? 'Do not switch on/off any electrical appliances.' : 'कोणतीही विद्युत उपकरणे चालू/बंद करू नका.'}</li>
+                <li className="flex gap-2">⚠️ {lang === 'en' ? 'Open all windows and doors.' : 'सभी खिड़कियां और दरवाज़े खोलें।'}</li>
               </ul>
               <button 
                 onClick={() => setShowWarning(false)}
                 className="w-full bg-red-600 text-white py-4 rounded-xl font-black text-lg shadow-lg hover:bg-red-700 transition-all"
               >
-                {lang === 'EN' ? 'I AM IN A SAFE AREA' : 'मी सुरक्षित भागात आहे'}
+                {lang === 'en' ? 'I AM IN A SAFE AREA' : 'मैं सुरक्षित क्षेत्र में हूं'}
               </button>
             </motion.div>
           </motion.div>
@@ -90,8 +93,8 @@ const GasLeakage = () => {
         <div className="bg-red-600 p-6 text-white flex items-center gap-4">
           <ShieldAlert size={32} />
           <div>
-            <h1 className="font-black text-xl uppercase tracking-tight">{lang === 'EN' ? 'Report Gas Leakage' : 'गॅस गळतीची तक्रार करा'}</h1>
-            <p className="text-red-100 text-xs font-bold uppercase">{lang === 'EN' ? 'High Priority - AI Marked Critical' : 'उच्च प्राथमिकता - AI द्वारे क्रिटिकल मार्क'}</p>
+            <h1 className="font-black text-xl uppercase tracking-tight">{lang === 'en' ? 'Report Gas Leakage' : 'गैस रिसाव की शिकायत करें'}</h1>
+            <p className="text-red-100 text-xs font-bold uppercase">{lang === 'en' ? 'High Priority - AI Marked Critical' : 'उच्च प्राथमिकता - AI द्वारे क्रिटिकल मार्क'}</p>
           </div>
         </div>
 
@@ -100,7 +103,7 @@ const GasLeakage = () => {
           <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4">
             <MapPin className="text-[#1e3a8a]" />
             <div>
-              <p className="text-[10px] font-black text-blue-400 uppercase">{lang === 'EN' ? 'Detected Location' : 'शोधलेले ठिकाण'}</p>
+              <p className="text-[10px] font-black text-blue-400 uppercase">{lang === 'en' ? 'Detected Location' : 'शोधलेले ठिकाण'}</p>
               <p className="text-sm font-bold text-slate-700">{location}</p>
             </div>
           </div>
@@ -108,7 +111,7 @@ const GasLeakage = () => {
           {/* Photo Upload [cite: 163] */}
           <label className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-red-400 transition-colors group cursor-pointer block disabled:opacity-50">
             <Camera size={40} className="mx-auto text-slate-300 group-hover:text-red-500 mb-2" />
-            <p className="text-sm font-bold text-slate-500">{photoFile ? 'Photo Selected' : (lang === 'EN' ? 'Upload Proof (Optional)' : 'पुरावा अपलोड करा (पर्यायी)')}</p>
+            <p className="text-sm font-bold text-slate-500">{photoFile ? 'Photo Selected' : (lang === 'en' ? 'Upload Proof (Optional)' : 'सबूत अपलोड करें (वैकल्पिक)')}</p>
             <input 
               type="file" 
               accept="image/*"
@@ -128,11 +131,11 @@ const GasLeakage = () => {
             {isSubmitting ? (
               <>
                 <Loader size={24} className="animate-spin" />
-                {lang === 'EN' ? 'Submitting...' : 'सबमिट करत आहे...'}
+                {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}
               </>
             ) : (
               <>
-                {lang === 'EN' ? 'SUBMIT EMERGENCY ALERT' : 'तात्काळ अलर्ट सबमिट करा'}
+                {lang === 'en' ? 'SUBMIT EMERGENCY ALERT' : 'आपातकालीन अलर्ट सबमिट करें'}
                 <Send size={24} />
               </>
             )}

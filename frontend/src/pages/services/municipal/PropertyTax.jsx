@@ -32,10 +32,10 @@ const PropertyTax = () => {
           </button>
           <div>
             <h1 className="text-xl font-black uppercase tracking-tight">
-              {lang === 'EN' ? 'Property Tax Payment' : 'मालमत्ता कर भरणा'}
+              {lang === 'en' ? 'Property Tax Payment' : 'संपत्ति कर भुगतान'}
             </h1>
             <p className="text-purple-100 text-[10px] font-bold uppercase tracking-widest">
-              {lang === 'EN' ? 'Secure Revenue Portal' : 'सुरक्षित महसूल पोर्टल'}
+              {lang === 'en' ? 'Secure Revenue Portal' : 'सुरक्षित महसूल पोर्टल'}
             </p>
           </div>
         </div>
@@ -46,7 +46,7 @@ const PropertyTax = () => {
             <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleFetchBill} className="space-y-6">
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
-                  {lang === 'EN' ? 'Enter Property ID / Index No.' : 'मालमत्ता आयडी / इंडेक्स नंबर प्रविष्ट करा'}
+                  {lang === 'en' ? 'Enter Property ID / Index No.' : 'संपत्ति आईडी / इंडेक्स नंबर दर्ज करें'}
                 </label>
                 <div className="flex items-center border-2 border-slate-100 rounded-2xl px-5 py-4 bg-slate-50 focus-within:border-[#7c3aed] focus-within:bg-white transition-all">
                   <Landmark className="text-slate-400" size={24} />
@@ -66,7 +66,7 @@ const PropertyTax = () => {
                 disabled={isFetching}
                 className="w-full bg-[#7c3aed] text-white py-5 rounded-2xl font-black text-xl shadow-xl flex items-center justify-center gap-3 hover:bg-purple-700 transition-all"
               >
-                {isFetching ? '...' : (lang === 'EN' ? 'FETCH BILL DETAILS' : 'बिल तपशील मिळवा')}
+                {isFetching ? '...' : (lang === 'en' ? 'FETCH BILL DETAILS' : 'बिल तपशील मिळवा')}
                 <Search size={24} />
               </button>
             </motion.form>
@@ -113,7 +113,7 @@ const PropertyTax = () => {
                 onClick={() => navigate('/service/electricity/success')}
                 className="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-xl shadow-xl flex items-center justify-center gap-3 hover:bg-green-700 transition-all active:scale-95"
               >
-                {lang === 'EN' ? 'PROCEED TO PAY' : 'पेमेंट करण्यासाठी पुढे जा'}
+                {lang === 'en' ? 'PROCEED TO PAY' : 'पेमेंट करण्यासाठी पुढे जा'}
                 <CreditCard size={24} />
               </button>
             </motion.div>

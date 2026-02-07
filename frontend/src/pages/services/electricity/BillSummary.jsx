@@ -50,7 +50,7 @@ const BillSummary = () => {
         <div className="bg-[#1A365D] p-6 text-white flex justify-between items-center">
           <div>
             <h2 className="text-lg font-bold">MSEDCL Electricity Bill</h2>
-            <p className="text-blue-200 text-xs">Maharashtra State Electricity Distribution Co. Ltd.</p>
+            <p className="text-blue-200 text-xs">State Electricity Distribution Co. Ltd.</p>
           </div>
           <div className="text-right">
             <p className="text-xs font-medium opacity-70">Bill Month</p>

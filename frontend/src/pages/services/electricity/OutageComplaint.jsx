@@ -54,13 +54,9 @@ const OutageComplaint = () => {
       // Call the API
       const response = await electricityAPI.reportOutage(formData);
       
-      if (response.data.success) {
-        alert(`Complaint Registered! Ticket #${response.data.ticketId || 'PWR-9988'}`);
-        navigate('/dashboard');
-      } else {
-        alert(response.data.message || 'Failed to submit complaint');
-        setSubmitting(false);
-      }
+      const complaintId = response.data.complaintId || 'PWR-SUBMITTED';
+      alert(`Complaint Registered! Ticket #${complaintId}`);
+      navigate('/dashboard');
     } catch (err) {
       console.error('Error submitting complaint:', err);
       alert(err.response?.data?.message || 'Failed to submit complaint. Please try again.');

@@ -14,24 +14,21 @@ const BookCylinder = () => {
     setBookingStatus('booking');
     
     try {
-      // Call the API to book cylinder
+      // Call the API to book cylinder (uses new-connection endpoint)
       const response = await gasAPI.bookCylinder({
+        address: 'Default delivery address',
         provider: provider,
-        cylinderType: '14.2kg',
       });
       
-      if (response.data.success) {
-        setRefId(response.data.referenceId || 'GAS-2026-8899');
-        setBookingStatus('success');
-        
-        // Auto-redirect after animation
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 4000);
-      } else {
-        alert(response.data.message || 'Failed to book cylinder');
-        setBookingStatus('idle');
-      }
+      // Backend returns { complaintId: ... }
+      const refId = response.data.complaintId || 'GAS-2026-BOOKED';
+      setRefId(refId);
+      setBookingStatus('success');
+      
+      // Auto-redirect after animation
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 4000);
     } catch (err) {
       console.error('Error booking cylinder:', err);
       alert(err.response?.data?.message || 'Failed to book cylinder. Please try again.');

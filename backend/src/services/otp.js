@@ -3,13 +3,48 @@ const bcrypt = require('bcryptjs');
 const prisma = require('../lib/prisma');
 const { BadRequestError } = require('../lib/customError');
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// Configuration from env
+const USE_WHATSAPP = process.env.TWILIO_USE_WHATSAPP === 'true';
+const SMS_FALLBACK = process.env.TWILIO_SMS_FALLBACK === 'true';
+const WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_FROM || '+14155238886';
 
 const OTP_EXPIRY_MINUTES = 5;
 const MAX_ATTEMPTS = 5;
 
 function normalizeMobile(mobile) {
   return mobile.startsWith('+') ? mobile : `+91${mobile}`;
+}
+
+async function sendMessage(to, body) {
+  const cleanTo = normalizeMobile(to);
+  
+  if (USE_WHATSAPP) {
+    try {
+      return await client.messages.create({
+        from: `whatsapp:${WHATSAPP_FROM}`,
+        to: `whatsapp:${cleanTo}`,
+        body,
+      });
+    } catch (err) {
+      if (SMS_FALLBACK) {
+        console.log('WhatsApp failed, falling back to SMS:', err.message);
+        return await client.messages.create({
+          from: WHATSAPP_FROM,
+          to: cleanTo,
+          body,
+        });
+      }
+      throw err;
+    }
+  } else {
+    return await client.messages.create({
+      from: WHATSAPP_FROM,
+      to: cleanTo,
+      body,
+    });
+  }
 }
 
 /**
@@ -33,12 +68,8 @@ async function sendOtp(mobile) {
     },
   });
 
-  // Send via WhatsApp
-  await client.messages.create({
-    from: 'whatsapp:+14155238886',
-    to: `whatsapp:${cleanMobile}`,
-    body: `SUVIDHA OTP: ${otp} (valid ${OTP_EXPIRY_MINUTES} min)`,
-  });
+  // Send via configured channel
+  await sendMessage(cleanMobile, `SUVIDHA OTP: ${otp} (valid ${OTP_EXPIRY_MINUTES} min)`);
 
   console.log(`OTP sent to ${cleanMobile}`);
 }

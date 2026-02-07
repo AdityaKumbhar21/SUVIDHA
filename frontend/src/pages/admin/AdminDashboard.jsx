@@ -23,21 +23,18 @@ const AdminDashboard = () => {
     setError('');
     try {
       const response = await adminAPI.listComplaints();
-      if (response.data.success) {
-        setComplaints(response.data.data || []);
-        
-        // Calculate stats
-        const data = response.data.data || [];
-        const stats = {
-          total: data.length,
-          pending: data.filter(c => c.status === 'Pending').length,
-          inProgress: data.filter(c => c.status === 'In Progress').length,
-          resolved: data.filter(c => c.status === 'Resolved').length
-        };
-        setStats(stats);
-      } else {
-        setError(response.data.message || 'Failed to load complaints');
-      }
+      // Backend returns { complaints: [...] }
+      const data = response.data.complaints || [];
+      setComplaints(data);
+      
+      // Calculate stats
+      const stats = {
+        total: data.length,
+        pending: data.filter(c => c.status === 'SUBMITTED').length,
+        inProgress: data.filter(c => c.status === 'IN_PROGRESS' || c.status === 'ASSIGNED').length,
+        resolved: data.filter(c => c.status === 'RESOLVED' || c.status === 'CLOSED').length
+      };
+      setStats(stats);
     } catch (err) {
       console.error('Error fetching complaints:', err);
       setError(err.response?.data?.message || 'Failed to load complaints');
@@ -49,6 +46,7 @@ const AdminDashboard = () => {
   const updateStatus = async (id, newStatus) => {
     try {
       const response = await adminAPI.updateComplaintStatus(id, newStatus);
+      // Backend returns { success: true, status: ... }
       if (response.data.success) {
         // Update local state
         setComplaints(complaints.map(c => 
@@ -61,13 +59,13 @@ const AdminDashboard = () => {
         );
         const stats = {
           total: updated.length,
-          pending: updated.filter(c => c.status === 'Pending').length,
-          inProgress: updated.filter(c => c.status === 'In Progress').length,
-          resolved: updated.filter(c => c.status === 'Resolved').length
+          pending: updated.filter(c => c.status === 'SUBMITTED').length,
+          inProgress: updated.filter(c => c.status === 'IN_PROGRESS' || c.status === 'ASSIGNED').length,
+          resolved: updated.filter(c => c.status === 'RESOLVED' || c.status === 'CLOSED').length
         };
         setStats(stats);
       } else {
-        alert(response.data.message || 'Failed to update status');
+        alert('Failed to update status');
       }
     } catch (err) {
       console.error('Error updating status:', err);
@@ -77,15 +75,28 @@ const AdminDashboard = () => {
 
   const getStatusBadgeClass = (status) => {
     switch(status) {
-      case 'In Progress':
+      case 'IN_PROGRESS':
+      case 'ASSIGNED':
         return 'bg-orange-100 text-orange-600';
-      case 'Resolved':
+      case 'RESOLVED':
+      case 'CLOSED':
         return 'bg-green-100 text-green-600';
-      case 'Pending':
+      case 'SUBMITTED':
         return 'bg-yellow-100 text-yellow-600';
       default:
         return 'bg-blue-100 text-blue-600';
     }
+  };
+
+  const formatStatus = (status) => {
+    const statusMap = {
+      'SUBMITTED': 'Pending',
+      'ASSIGNED': 'Assigned',
+      'IN_PROGRESS': 'In Progress',
+      'RESOLVED': 'Resolved',
+      'CLOSED': 'Closed'
+    };
+    return statusMap[status] || status;
   };
 
   return (
@@ -145,10 +156,10 @@ const AdminDashboard = () => {
                 <tr key={c.id} className="border-b border-slate-100 hover:bg-blue-50/50 transition-colors">
                   <td className="p-4 font-bold text-slate-700">{c.id}</td>
                   <td className="p-4 text-sm">{c.department || 'N/A'}</td>
-                  <td className="p-4 text-sm font-medium">{c.citizenName || 'N/A'}</td>
+                  <td className="p-4 text-sm font-medium">{c.user?.name || 'N/A'}</td>
                   <td className="p-4">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${getStatusBadgeClass(c.status)}`}>
-                      {c.status}
+                      {formatStatus(c.status)}
                     </span>
                   </td>
                   <td className="p-4">
@@ -157,9 +168,11 @@ const AdminDashboard = () => {
                       onChange={(e) => updateStatus(c.id, e.target.value)}
                       className="text-xs font-bold border rounded px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                     >
-                      <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Resolved">Resolved</option>
+                      <option value="SUBMITTED">Pending</option>
+                      <option value="ASSIGNED">Assigned</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="RESOLVED">Resolved</option>
+                      <option value="CLOSED">Closed</option>
                     </select>
                   </td>
                 </tr>

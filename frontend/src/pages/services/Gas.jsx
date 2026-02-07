@@ -14,16 +14,16 @@ const Gas = () => {
   const gasServices = [
     {
       id: 'book-cylinder',
-      name: lang === 'EN' ? 'Book Cylinder' : 'सिलेंडर बुक करा',
-      sub: lang === 'EN' ? 'Refill your LPG cylinder now' : 'तुमचा LPG सिलेंडर रिफिल करा',
+      name: lang === 'en' ? 'Book Cylinder' : 'सिलेंडर बुक करें',
+      sub: lang === 'en' ? 'Refill your LPG cylinder now' : 'अपना LPG सिलेंडर रिफिल करें',
       icon: <Truck size={32} />,
       gradient: 'from-orange-500 to-red-600',
       path: '/service/gas/book'
     },
     {
       id: 'report-leak',
-      name: lang === 'EN' ? 'Report Gas Leak' : 'गॅस गळतीची तक्रार',
-      sub: lang === 'EN' ? 'Emergency safety reporting (Critical)' : 'तातडीची सुरक्षा तक्रार (क्रिटिकल)',
+      name: lang === 'en' ? 'Report Gas Leak' : 'गैस रिसाव की शिकायत',
+      sub: lang === 'en' ? 'Emergency safety reporting (Critical)' : 'आपातकालीन सुरक्षा रिपोर्ट (गंभीर)',
       icon: <ShieldAlert size={32} />,
       gradient: 'from-red-600 to-rose-700',
       // UPDATED: Points to the emergency leakage flow implemented next
@@ -31,16 +31,16 @@ const Gas = () => {
     },
     {
       id: 'new-connection',
-      name: lang === 'EN' ? 'New Connection' : 'नवीन कनेक्शन',
-      sub: lang === 'EN' ? 'Apply for a new gas connection' : 'नवीन गॅस कनेक्शनसाठी अर्ज करा',
+      name: lang === 'en' ? 'New Connection' : 'नवीन कनेक्शन',
+      sub: lang === 'en' ? 'Apply for a new gas connection' : 'नए गैस कनेक्शन के लिए आवेदन करें',
       icon: <Flame size={32} />,
       gradient: 'from-amber-500 to-orange-600',
       path: '/service/gas/new'
     },
     {
       id: 'check-subsidy',
-      name: lang === 'EN' ? 'Check Subsidy' : 'सबसिडी तपासा',
-      sub: lang === 'EN' ? 'View your subsidy transfer status' : 'तुमची सबसिडी हस्तांतरण स्थिती पहा',
+      name: lang === 'en' ? 'Check Subsidy' : 'सबसिडी तपासा',
+      sub: lang === 'en' ? 'View your subsidy transfer status' : 'अपनी सब्सिडी हस्तांतरण स्थिति देखें',
       icon: <FileText size={32} />,
       gradient: 'from-orange-400 to-pink-600',
       path: '/service/gas/subsidy'
@@ -60,10 +60,10 @@ const Gas = () => {
         </button>
         <div>
           <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">
-            {lang === 'EN' ? 'Gas Services' : 'गॅस सेवा'}
+            {lang === 'en' ? 'Gas Services' : 'गैस सेवाएं'}
           </h1>
           <p className="text-slate-500 font-medium">
-            {lang === 'EN' ? 'LPG Distribution & Safety • Govt. of Maharashtra' : 'LPG वितरण आणि सुरक्षा • महाराष्ट्र शासन'}
+            {lang === 'en' ? 'LPG Distribution & Safety • Govt. of India' : 'LPG वितरण एवं सुरक्षा • भारत सरकार'}
           </p>
         </div>
       </div>
@@ -124,10 +124,10 @@ const Gas = () => {
         </div>
         <div>
           <h4 className="font-black text-xl uppercase tracking-tighter">
-            {lang === 'EN' ? 'Emergency Leak Helpline: 1906' : 'तातडीची गॅस गळती मदतलाईन: १९०६'}
+            {lang === 'en' ? 'Emergency Leak Helpline: 1906' : 'तातडीची गॅस गळती मदतलाईन: १९०६'}
           </h4>
           <p className="text-red-100 text-sm font-bold opacity-90">
-            {lang === 'EN' 
+            {lang === 'en' 
               ? 'AI Marked CRITICAL: Do not switch on/off any electrical switches if you smell gas.' 
               : 'AI द्वारे क्रिटिकल मार्क: गॅसचा वास आल्यास कोणतेही विद्युत स्विच चालू/बंद करू नका.'}
           </p>

@@ -32,10 +32,10 @@ const CertificateRequest = () => {
             </button>
             <div>
               <h1 className="text-xl font-black uppercase tracking-tight">
-                {lang === 'EN' ? 'Certificate Request' : 'प्रमाणपत्र विनंती'}
+                {lang === 'en' ? 'Certificate Request' : 'प्रमाणपत्र विनंती'}
               </h1>
               <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest">
-                {lang === 'EN' ? 'Municipal Services • AI Verified' : 'महानगरपालिका सेवा • AI सत्यापित'}
+                {lang === 'en' ? 'Municipal Services • AI Verified' : 'नगर निगम सेवाएं • AI सत्यापित'}
               </p>
             </div>
           </div>
@@ -49,7 +49,7 @@ const CertificateRequest = () => {
           {step === 1 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
               <label className="block text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
-                {lang === 'EN' ? 'Choose Certificate Type' : 'प्रमाणपत्राचा प्रकार निवडा'}
+                {lang === 'en' ? 'Choose Certificate Type' : 'प्रमाण पत्र का प्रकार चुनें'}
               </label>
               {['Birth Certificate', 'Death Certificate', 'Trade License'].map((type) => (
                 <button 
@@ -61,7 +61,7 @@ const CertificateRequest = () => {
                     <div className="bg-slate-100 p-3 rounded-xl group-hover:bg-[#1e3a8a] group-hover:text-white transition-colors">
                       <FileText size={24} />
                     </div>
-                    <span className="font-bold text-slate-700">{lang === 'EN' ? type : 'प्रमाणपत्र'}</span>
+                    <span className="font-bold text-slate-700">{lang === 'en' ? type : 'प्रमाणपत्र'}</span>
                   </div>
                   <ArrowRight size={20} className="text-slate-300 group-hover:text-[#1e3a8a]" />
                 </button>
@@ -77,10 +77,10 @@ const CertificateRequest = () => {
                    <Upload size={32} className="text-[#1e3a8a]" />
                 </div>
                 <h3 className="text-xl font-black text-slate-800 mb-2">
-                  {lang === 'EN' ? `Upload ID for ${certType}` : 'ओळखपत्र अपलोड करा'}
+                  {lang === 'en' ? `Upload ID for ${certType}` : 'पहचान पत्र अपलोड करें'}
                 </h3>
                 <p className="text-sm text-slate-500 font-medium mb-8 max-w-xs mx-auto">
-                  {lang === 'EN' ? 'Our AI will extract your Name and Address automatically.' : 'आमचे AI तुमचे नाव आणि पत्ता आपोआप काढेल.'}
+                  {lang === 'en' ? 'Our AI will extract your Name and Address automatically.' : 'हमारा AI आपका नाम और पता स्वचालित रूप से निकालेगा।'}
                 </p>
                 <button 
                   onClick={handleFileUpload}
@@ -89,7 +89,7 @@ const CertificateRequest = () => {
                     isVerifying ? 'bg-slate-200 text-slate-400' : 'bg-[#1e3a8a] text-white hover:scale-105'
                   }`}
                 >
-                  {isVerifying ? (lang === 'EN' ? 'SCANNING ID...' : 'आयडी स्कॅन करत आहे...') : (lang === 'EN' ? 'SELECT FILE' : 'फाइल निवडा')}
+                  {isVerifying ? (lang === 'en' ? 'SCANNING ID...' : 'ID स्कैन हो रहा है...') : (lang === 'en' ? 'SELECT FILE' : 'फ़ाइल चुनें')}
                 </button>
               </div>
             </motion.div>
@@ -101,14 +101,14 @@ const CertificateRequest = () => {
               <div className="bg-green-50 border border-green-100 p-5 rounded-2xl flex items-center gap-4 text-green-700">
                 <CheckCircle size={28} />
                 <div>
-                  <p className="text-sm font-black uppercase tracking-tight">{lang === 'EN' ? 'AI OCR Verified' : 'AI OCR सत्यापित'}</p>
-                  <p className="text-xs font-medium opacity-80">{lang === 'EN' ? 'Data extracted: Aditya K., Pune.' : 'डेटा प्राप्त: आदित्य के., पुणे.'}</p>
+                  <p className="text-sm font-black uppercase tracking-tight">{lang === 'en' ? 'AI OCR Verified' : 'AI OCR सत्यापित'}</p>
+                  <p className="text-xs font-medium opacity-80">{lang === 'en' ? 'Data extracted: Aditya K., Pune.' : 'डेटा प्राप्त: आदित्य के., पुणे.'}</p>
                 </div>
               </div>
               
               <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-500 font-bold text-xs uppercase tracking-widest">{lang === 'EN' ? 'Application Fee' : 'अर्ज शुल्क'}</span>
+                  <span className="text-slate-500 font-bold text-xs uppercase tracking-widest">{lang === 'en' ? 'Application Fee' : 'आवेदन शुल्क'}</span>
                   <span className="text-2xl font-black text-[#1e3a8a]">₹25.00</span>
                 </div>
                 <div className="h-px bg-slate-200 my-4"></div>
@@ -117,7 +117,7 @@ const CertificateRequest = () => {
                   onClick={() => navigate('/service/electricity/success')} 
                   className="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-xl shadow-xl flex items-center justify-center gap-3 hover:bg-green-700 transition-all"
                 >
-                  {lang === 'EN' ? 'PAY & SUBMIT' : 'पेमेंट आणि सबमिट'} <ShieldCheck size={24} />
+                  {lang === 'en' ? 'PAY & SUBMIT' : 'भुगतान करें और सबमिट करें'} <ShieldCheck size={24} />
                 </button>
               </div>
             </motion.div>

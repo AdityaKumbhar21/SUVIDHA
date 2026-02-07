@@ -61,7 +61,7 @@ const Water = () => {
           <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">
             {t('water')}
           </h1>
-          <p className="text-slate-500 font-medium">Municipal Services • Govt. of Maharashtra</p>
+          <p className="text-slate-500 font-medium">Municipal Services • Govt. of India</p>
         </div>
       </div>
 

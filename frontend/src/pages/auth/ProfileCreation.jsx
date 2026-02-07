@@ -28,15 +28,15 @@ const ProfileCreation = () => {
         return;
       }
 
-      // Call the API to update profile
-      const response = await profileAPI.updateProfile(formData);
+      // Call the API to update profile - map frontend fields to backend fields
+      const response = await profileAPI.updateProfile({
+        name: formData.fullName,
+        address: formData.address,
+        cityWard: formData.ward ? `${formData.city} - ${formData.ward}` : formData.city,
+      });
       
-      if (response.data.success) {
-        // Navigate to dashboard on success
-        navigate('/dashboard');
-      } else {
-        setError(response.data.message || 'Failed to save profile');
-      }
+      // Navigate to dashboard on success
+      navigate('/dashboard');
     } catch (err) {
       console.error('Profile creation error:', err);
       setError(err.response?.data?.message || 'Failed to save profile. Please try again.');

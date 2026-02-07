@@ -31,7 +31,7 @@ const ChatWidget = ({ isOpen, onClose }) => {
       const lowerInput = newMsg.text.toLowerCase();
       if (lowerInput.includes("bill") || lowerInput.includes("pay")) botResponse = "To pay bills, please go to the 'Services' menu and select Electricity or Water department.";
       if (lowerInput.includes("document") || lowerInput.includes("aadhar")) botResponse = "You can upload documents in the 'Applications' section after logging in.";
-      if (lowerInput.includes("marathi")) botResponse = "तुम्ही वरच्या उजव्या कोपऱ्यात असलेल्या बटणावर क्लिक करून भाषा बदलू शकता.";
+      if (lowerInput.includes("hindi")) botResponse = "आप ऊपर दाएं कोने में बटन पर क्लिक करके भाषा बदल सकते हैं।";
 
       setMessages(prev => [...prev, { id: Date.now() + 1, text: botResponse, sender: 'bot' }]);
       setIsTyping(false);

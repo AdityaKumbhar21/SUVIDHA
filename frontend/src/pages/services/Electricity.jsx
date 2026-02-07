@@ -65,7 +65,7 @@ const Electricity = () => {
         </button>
         <div>
           <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">Electricity Services</h1>
-          <p className="text-slate-500 font-medium">Department of Power • Govt. of Maharashtra</p>
+          <p className="text-slate-500 font-medium">Department of Power • Govt. of India</p>
         </div>
       </div>
 

@@ -25,19 +25,22 @@ const WaterComplaint = () => {
     setSubmitting(true);
     
     try {
+      // Create FormData for the complaint
+      const formData = new FormData();
+      formData.append('description', 'No water supply complaint');
+      formData.append('location', location);
+
       // Call the API to report no water supply
-      const response = await waterAPI.reportNoSupply({
-        location: location,
-        description: 'No water supply complaint',
-      });
+      const response = await waterAPI.reportNoSupply(formData);
       
-      if (response.data.success) {
+      // Backend returns { complaintId: ... }
+      if (response.data.complaintId) {
         setSubmitted(true);
         setTimeout(() => {
           navigate('/dashboard');
         }, 2500);
       } else {
-        alert(response.data.message || 'Failed to submit complaint');
+        alert('Failed to submit complaint');
         setSubmitting(false);
       }
     } catch (err) {

@@ -90,6 +90,36 @@ async function raiseGasLeakageComplaint(req, res, next) {
   }
 }
 
+async function raiseCylinderIssue(req, res, next) {
+  try {
+    const cylinderSchema = z.object({
+      description: z.string().min(10),
+      consumerNumber: z.string().min(5).optional(),
+    });
+    const { description, consumerNumber } = cylinderSchema.parse(req.body);
+
+    const complaint = await prisma.complaint.create({
+      data: {
+        userId: req.user.id,
+        department: Department,
+        complaintType: ComplaintType.CYLINDER,
+        description: `${description}${consumerNumber ? ` (Consumer: ${consumerNumber})` : ''}`,
+        priority: 'MEDIUM',
+        etaMinutes: 480,
+      },
+    });
+
+    await sendNotification(
+      req.user.id,
+      `Cylinder issue complaint registered (#${complaint.id}).`,
+      'complaint_created'
+    );
+
+    res.status(201).json({ complaintId: complaint.id });
+  } catch (err) {
+    next(err);
+  }
+}
 
 
 async function requestNewGasConnection(req, res, next) {
@@ -123,5 +153,6 @@ async function requestNewGasConnection(req, res, next) {
 module.exports = {
   payGasBill,
   raiseGasLeakageComplaint,
+  raiseCylinderIssue,
   requestNewGasConnection,
 };

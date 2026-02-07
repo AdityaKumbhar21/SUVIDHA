@@ -80,7 +80,95 @@ async function raiseNoWaterComplaint(req, res, next) {
   }
 }
 
+async function raiseLowPressureComplaint(req, res, next) {
+  try {
+    const { description, location } = complaintSchema.parse(req.body);
+
+    const complaint = await prisma.complaint.create({
+      data: {
+        userId: req.user.id,
+        department: Department,
+        complaintType: 'LOW_PRESSURE',
+        description,
+        location,
+        priority: 'MEDIUM',
+        etaMinutes: 240,
+      },
+    });
+
+    await sendNotification(
+      req.user.id,
+      `Low pressure complaint registered (#${complaint.id}).`,
+      'complaint_created'
+    );
+
+    res.status(201).json({ complaintId: complaint.id });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function raiseWaterMeterIssue(req, res, next) {
+  try {
+    const { description, location } = complaintSchema.parse(req.body);
+
+    const complaint = await prisma.complaint.create({
+      data: {
+        userId: req.user.id,
+        department: Department,
+        complaintType: 'METER_ISSUE',
+        description,
+        location,
+        priority: 'MEDIUM',
+        etaMinutes: 480,
+      },
+    });
+
+    await sendNotification(
+      req.user.id,
+      `Water meter issue registered (#${complaint.id}).`,
+      'complaint_created'
+    );
+
+    res.status(201).json({ complaintId: complaint.id });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function requestNewWaterConnection(req, res, next) {
+  try {
+    const addressSchema = z.object({ address: z.string().min(10) });
+    const { address } = addressSchema.parse(req.body);
+
+    const complaint = await prisma.complaint.create({
+      data: {
+        userId: req.user.id,
+        department: Department,
+        complaintType: 'GENERAL',
+        description: `New water connection requested at ${address}`,
+        location: address,
+        priority: 'MEDIUM',
+        etaMinutes: 10080,
+      },
+    });
+
+    await sendNotification(
+      req.user.id,
+      `New water connection request submitted (#${complaint.id}).`,
+      'request_submitted'
+    );
+
+    res.status(201).json({ complaintId: complaint.id });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   payWaterBill,
   raiseNoWaterComplaint,
+  raiseLowPressureComplaint,
+  raiseWaterMeterIssue,
+  requestNewWaterConnection,
 };

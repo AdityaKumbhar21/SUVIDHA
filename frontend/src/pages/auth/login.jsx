@@ -43,10 +43,10 @@ const Login = () => {
           if (response.data.success) {
             setStep(2); // Move to Step 2
           } else {
-            setError(response.data.message || (lang === 'EN' ? 'Failed to send OTP' : 'OTP पाठवणे अयशस्वी'));
+            setError(response.data.message || (lang === 'en' ? 'Failed to send OTP' : 'OTP भेजने में विफल'));
           }
         } else {
-          setError(lang === 'EN' ? "Please enter valid 10-digit number" : "कृपया वैध १० अंकी क्रमांक प्रविष्ट करा");
+          setError(lang === 'en' ? "Please enter valid 10-digit number" : "कृपया वैध 10 अंकों का नंबर दर्ज करें");
         }
       } else {
         // Step 2: Verify OTP
@@ -61,17 +61,17 @@ const Login = () => {
             // Navigate to profile creation or dashboard
             navigate('/auth/create-profile');
           } else {
-            setError(response.data.message || (lang === 'EN' ? 'Invalid OTP' : 'अमान्य OTP'));
+            setError(response.data.message || (lang === 'en' ? 'Invalid OTP' : 'अमान्य OTP'));
           }
         } else {
-          setError(lang === 'EN' ? "Please enter valid 6-digit OTP" : "कृपया वैध ६ अंकी OTP प्रविष्ट करा");
+          setError(lang === 'en' ? "Please enter valid 6-digit OTP" : "कृपया वैध 6 अंकों का OTP दर्ज करें");
         }
       }
     } catch (err) {
       console.error('Auth error:', err);
       setError(
         err.response?.data?.message ||
-        (lang === 'EN' ? 'Authentication failed. Please try again.' : 'प्रमाणीकरण विफल. कृपया पुन्हा प्रयत्न करा.')
+        (lang === 'en' ? 'Authentication failed. Please try again.' : 'प्रमाणीकरण विफल। कृपया पुनः प्रयास करें।')
       );
     } finally {
       setLoading(false);
@@ -79,34 +79,34 @@ const Login = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-[#f8fafc] py-12 px-6 relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#f8fafc] py-16 px-8 relative overflow-hidden">
       
       {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-white to-green-500"></div>
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 via-white to-green-500"></div>
       
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border border-slate-100 relative z-10"
+        className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-10 border border-slate-100 relative z-10"
       >
-        <div className="flex justify-center mb-6">
-           <div className="bg-blue-50 p-4 rounded-full">
+        <div className="flex justify-center mb-8">
+           <div className="bg-blue-50 p-5 rounded-full">
               {/* Change Icon based on Step */}
-              {step === 1 ? <Smartphone size={32} className="text-[#1e3a8a]" /> : <KeyRound size={32} className="text-[#1e3a8a]" />}
+              {step === 1 ? <Smartphone size={40} className="text-[#1e3a8a]" /> : <KeyRound size={40} className="text-[#1e3a8a]" />}
            </div>
         </div>
 
         {/* Dynamic Headlines */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black text-[#1e3a8a] mb-2">
+          <h1 className="text-4xl font-black text-[#1e3a8a] mb-3">
             {step === 1 
-              ? (lang === 'EN' ? 'Citizen Login' : 'नागरिक लॉगिन') 
-              : (lang === 'EN' ? 'Verify OTP' : 'OTP सत्यापित करा')}
+              ? (lang === 'en' ? 'Citizen Login' : 'नागरिक लॉगिन') 
+              : (lang === 'en' ? 'Verify OTP' : 'OTP सत्यापित करें')}
           </h1>
-          <p className="text-slate-500 font-medium text-sm">
+          <p className="text-slate-500 font-medium text-base">
             {step === 1 
-              ? (lang === 'EN' ? 'Secure Access via Mobile OTP' : 'मोबाईल OTP द्वारे सुरक्षित प्रवेश')
-              : (lang === 'EN' ? `OTP Sent to +91 ${mobile}` : `+91 ${mobile} वर OTP पाठवला`)}
+              ? (lang === 'en' ? 'Secure Access via Mobile OTP' : 'मोबाइल OTP द्वारा सुरक्षित प्रवेश')
+              : (lang === 'en' ? `OTP Sent to +91 ${mobile}` : `+91 ${mobile} पर OTP भेजा गया`)}
           </p>
         </div>
 
@@ -126,18 +126,18 @@ const Login = () => {
           {/* STEP 1: MOBILE INPUT */}
           {step === 1 && (
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                 {lang === 'EN' ? 'Enter Mobile Number' : 'मोबाईल क्रमांक प्रविष्ट करा'}
+              <label className="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-3">
+                 {lang === 'en' ? 'Enter Mobile Number' : 'मोबाइल नंबर दर्ज करें'}
               </label>
-              <div className="flex items-center border-2 border-blue-100 rounded-xl px-4 py-3 focus-within:border-[#1e3a8a] focus-within:ring-4 focus-within:ring-blue-50 transition-all bg-slate-50">
-                <span className="text-slate-400 font-bold border-r border-slate-300 pr-3 mr-3">+91</span>
+              <div className="flex items-center border-2 border-blue-100 rounded-2xl px-5 py-4 focus-within:border-[#1e3a8a] focus-within:ring-4 focus-within:ring-blue-50 transition-all bg-slate-50">
+                <span className="text-slate-400 font-bold text-lg border-r border-slate-300 pr-4 mr-4">+91</span>
                 <input 
                   type="text" 
                   inputMode="numeric"
                   value={mobile}
                   onChange={handleMobileChange}
                   disabled={loading}
-                  className="flex-1 bg-transparent outline-none font-bold text-lg text-slate-800 placeholder:text-slate-300 tracking-widest disabled:opacity-50"
+                  className="flex-1 bg-transparent outline-none font-bold text-xl text-slate-800 placeholder:text-slate-300 tracking-[0.3em] disabled:opacity-50"
                   placeholder="XXXXXXXXXX"
                   autoFocus
                 />
@@ -148,18 +148,18 @@ const Login = () => {
           {/* STEP 2: OTP INPUT */}
           {step === 2 && (
              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-               <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                 {lang === 'EN' ? 'Enter 4-Digit OTP' : '४-अंकी OTP प्रविष्ट करा'}
+               <label className="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-3">
+                 {lang === 'en' ? 'Enter 6-Digit OTP' : '6 अंकों का OTP दर्ज करें'}
                </label>
-               <div className="flex items-center border-2 border-blue-100 rounded-xl px-4 py-3 focus-within:border-[#1e3a8a] focus-within:ring-4 focus-within:ring-blue-50 transition-all bg-slate-50">
+               <div className="flex items-center border-2 border-blue-100 rounded-2xl px-5 py-4 focus-within:border-[#1e3a8a] focus-within:ring-4 focus-within:ring-blue-50 transition-all bg-slate-50">
                  <input 
                    type="text" 
                    inputMode="numeric"
                    value={otp}
                    onChange={handleOtpChange}
                    disabled={loading}
-                   className="flex-1 bg-transparent outline-none font-black text-2xl text-center text-[#1e3a8a] tracking-[1em] disabled:opacity-50"
-                   placeholder="••••"
+                   className="flex-1 bg-transparent outline-none font-black text-3xl text-center text-[#1e3a8a] tracking-[1.5em] disabled:opacity-50"
+                   placeholder="••••••"
                    autoFocus
                  />
                </div>
@@ -169,7 +169,7 @@ const Login = () => {
                    disabled={loading}
                    className="text-xs font-bold text-slate-400 hover:text-[#1e3a8a] underline disabled:opacity-50"
                  >
-                    {lang === 'EN' ? 'Change Mobile Number' : 'मोबाईल नंबर बदला'}
+                    {lang === 'en' ? 'Change Mobile Number' : 'मोबाइल नंबर बदलें'}
                  </button>
                </div>
              </motion.div>
@@ -179,18 +179,18 @@ const Login = () => {
           <button 
             onClick={handleAuth}
             disabled={loading}
-            className="w-full bg-[#1e3a8a] hover:bg-blue-900 disabled:bg-blue-800 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+            className="w-full bg-[#1e3a8a] hover:bg-blue-900 disabled:bg-blue-800 text-white py-5 rounded-2xl font-bold text-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-70 mt-4"
           >
             {loading ? (
               <>
                 <Loader size={20} className="animate-spin" />
-                {lang === 'EN' ? 'Processing...' : 'प्रक्रियाशील...'}
+                {lang === 'en' ? 'Processing...' : 'प्रक्रिया जारी...'}
               </>
             ) : (
               <>
                 {step === 1 
-                  ? (lang === 'EN' ? 'SEND OTP' : 'OTP पाठवा') 
-                  : (lang === 'EN' ? 'VERIFY & LOGIN' : 'सत्यापित करा')}
+                  ? (lang === 'en' ? 'SEND OTP' : 'OTP भेजें') 
+                  : (lang === 'en' ? 'VERIFY & LOGIN' : 'सत्यापित करें और लॉगिन करें')}
                 <ArrowRight size={20} />
               </>
             )}
@@ -198,10 +198,10 @@ const Login = () => {
         </div>
 
         {/* FOOTER TEXT */}
-        <div className="mt-8 text-center">
-           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-             <ShieldCheck size={14} />
-             {lang === 'EN' ? '100% Secure & Encrypted' : '१००% सुरक्षित आणि एनक्रिप्टेड'}
+        <div className="mt-10 text-center">
+           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+             <ShieldCheck size={16} />
+             {lang === 'en' ? '100% Secure & Encrypted' : '100% सुरक्षित एवं एन्क्रिप्टेड'}
            </p>
         </div>
 

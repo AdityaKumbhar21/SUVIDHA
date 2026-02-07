@@ -14,24 +14,24 @@ const Municipal = () => {
   const muniServices = [
     {
       id: 'property-tax',
-      name: lang === 'EN' ? 'Property Tax' : 'मालमत्ता कर',
-      sub: lang === 'EN' ? 'Pay your annual property tax' : 'तुमचा वार्षिक मालमत्ता कर भरा',
+      name: lang === 'en' ? 'Property Tax' : 'संपत्ति कर',
+      sub: lang === 'en' ? 'Pay your annual property tax' : 'अपना वार्षिक संपत्ति कर भरें',
       icon: <Landmark size={30} />,
       gradient: 'from-purple-500 to-indigo-600',
       path: '/service/municipal/tax'
     },
     {
       id: 'certificates',
-      name: lang === 'EN' ? 'Certificates' : 'प्रमाणपत्रे',
-      sub: lang === 'EN' ? 'Birth, Death & Marriage' : 'जन्म, मृत्यू आणि विवाह',
+      name: lang === 'en' ? 'Certificates' : 'प्रमाण पत्र',
+      sub: lang === 'en' ? 'Birth, Death & Marriage' : 'जन्म, मृत्यु एवं विवाह',
       icon: <Award size={30} />,
       gradient: 'from-indigo-500 to-blue-600',
       path: '/service/municipal/certificate'
     },
     {
       id: 'trade-license',
-      name: lang === 'EN' ? 'Trade License' : 'व्यापार परवाना',
-      sub: lang === 'EN' ? 'Apply or renew business license' : 'व्यवसाय परवान्यासाठी अर्ज करा',
+      name: lang === 'en' ? 'Trade License' : 'व्यापार लाइसेंस',
+      sub: lang === 'en' ? 'Apply or renew business license' : 'व्यवसाय लाइसेंस के लिए आवेदन करें',
       icon: <FileText size={30} />,
       gradient: 'from-violet-500 to-purple-700',
       path: '/service/municipal/trade'
@@ -51,9 +51,9 @@ const Municipal = () => {
         </button>
         <div>
           <h1 className="text-3xl font-black text-[#1e3a8a] uppercase tracking-tight">
-            {lang === 'EN' ? 'Municipal Services' : 'महानगरपालिका सेवा'}
+            {lang === 'en' ? 'Municipal Services' : 'नगर निगम सेवाएं'}
           </h1>
-          <p className="text-slate-500 font-medium">Urban Administration • Govt. of Maharashtra</p>
+          <p className="text-slate-500 font-medium">Urban Administration • Govt. of India</p>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ const Municipal = () => {
             </div>
             
             <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between text-[#1e3a8a] font-black text-[10px] uppercase tracking-[0.2em]">
-               <span>{lang === 'EN' ? 'Proceed' : 'पुढे जा'}</span>
+               <span>{lang === 'en' ? 'Proceed' : 'पुढे जा'}</span>
                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-purple-50 group-hover:text-purple-600 transition-all">
                  <ArrowRight size={18} />
                </div>
@@ -99,12 +99,12 @@ const Municipal = () => {
           </div>
           <div>
             <h4 className="text-purple-900 font-black text-sm uppercase tracking-tight">
-              {lang === 'EN' ? 'Document AI Verification' : 'Document AI पडताळणी'}
+              {lang === 'en' ? 'Document AI Verification' : 'Document AI पडताळणी'}
             </h4>
             <p className="text-purple-700 text-xs font-bold opacity-80 mt-1">
-              {lang === 'EN' 
+              {lang === 'en' 
                 ? 'Automated OCR verification active for all certificate and tax requests.' 
-                : 'सर्व प्रमाणपत्र आणि कर विनंत्यांसाठी स्वयंचलित OCR पडताळणी सक्रिय.'}
+                : 'सभी प्रमाण पत्र और कर अनुरोधों के लिए स्वचालित OCR सत्यापन सक्रिय।'}
             </p>
           </div>
         </div>

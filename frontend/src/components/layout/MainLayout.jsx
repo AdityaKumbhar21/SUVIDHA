@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link } from 'react-router-dom';
-import { Layout, Bell, User, MessageSquare, X } from 'lucide-react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Layout, Bell, User, MessageSquare, X, Home, Grid, FileText, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import ChatWidget from '../chat/ChatWidget';
 
 const MainLayout = () => {
   const { lang, toggleLanguage } = useLanguage();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const location = useLocation();
+  
+  // Check if user is logged in
+  const isLoggedIn = localStorage.getItem('token');
+  const userName = localStorage.getItem('userName') || 'Citizen';
+  const userId = localStorage.getItem('userId')?.slice(-4) || '';
+  
+  // Check if on auth pages
+  const isAuthPage = location.pathname === '/' || location.pathname === '/auth' || location.pathname === '/auth/create-profile';
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans text-slate-900">
@@ -14,58 +23,65 @@ const MainLayout = () => {
       {/* =========================================
           1. GOVERNMENT HEADER & NAVIGATION
       ========================================= */}
-      <header className="bg-[#1e3a8a] text-white px-6 py-4 flex justify-between items-center shadow-lg relative z-50">
+      <header className="bg-[#1e3a8a] text-white px-8 py-5 flex justify-between items-center shadow-lg relative z-50">
         
         {/* Left: Branding */}
         <Link to="/" className="flex items-center gap-4 group">
-          <div className="bg-white/10 p-2.5 rounded-full border border-white/20 group-hover:bg-white/20 transition-all">
-            <Layout size={24} className="text-white" />
+          <div className="bg-white/10 p-3 rounded-full border border-white/20 group-hover:bg-white/20 transition-all">
+            <Layout size={28} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-black tracking-tight leading-none uppercase">Suvidha Portal</h1>
-            <p className="text-[10px] font-bold text-blue-200 tracking-[0.15em] uppercase mt-0.5">Govt. of Maharashtra</p>
+            <h1 className="text-2xl font-black tracking-tight leading-none uppercase">Suvidha Portal</h1>
+            <p className="text-xs font-bold text-blue-200 tracking-[0.15em] uppercase mt-1">Govt. of India</p>
           </div>
         </Link>
 
-        {/* Center: Main Navigation */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-blue-100">
-          <Link to="/" className="hover:text-white transition-colors py-2 border-b-2 border-transparent hover:border-white">
-            HOME
-          </Link>
-          <Link to="/dashboard" className="hover:text-white transition-colors py-2 border-b-2 border-transparent hover:border-white">
-            SERVICES
-          </Link>
-          <Link to="/dashboard" className="hover:text-white transition-colors py-2 border-b-2 border-transparent hover:border-white">
-            DASHBOARD
-          </Link>
-          <Link to="/service/electricity/outage" className="hover:text-white transition-colors py-2 border-b-2 border-transparent hover:border-white">
-            GRIEVANCES
-          </Link>
-        </nav>
+        {/* Center: Main Navigation - Only show when logged in and not on auth pages */}
+        {isLoggedIn && !isAuthPage && (
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/dashboard" className="flex items-center gap-2 hover:bg-white/10 px-4 py-3 rounded-xl transition-all">
+              <Home size={20} />
+              <span className="font-bold text-sm">HOME</span>
+            </Link>
+            <Link to="/dashboard" className="flex items-center gap-2 hover:bg-white/10 px-4 py-3 rounded-xl transition-all">
+              <Grid size={20} />
+              <span className="font-bold text-sm">SERVICES</span>
+            </Link>
+            <Link to="/service/electricity/outage" className="flex items-center gap-2 hover:bg-white/10 px-4 py-3 rounded-xl transition-all">
+              <AlertTriangle size={20} />
+              <span className="font-bold text-sm">GRIEVANCES</span>
+            </Link>
+          </nav>
+        )}
 
         {/* Right: User Tools */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-6">
            <button 
              onClick={toggleLanguage} 
-             className="text-xs font-bold bg-[#3b82f6] hover:bg-blue-400 px-4 py-1.5 rounded-full border border-blue-400 shadow-sm transition-all"
+             className="text-sm font-bold bg-[#3b82f6] hover:bg-blue-400 px-5 py-2.5 rounded-full border border-blue-400 shadow-sm transition-all"
            >
-              {lang === 'EN' ? 'मराठी (MAR)' : 'English (EN)'}
+              {lang === 'en' ? 'हिंदी (HI)' : 'English (EN)'}
            </button>
 
-           <div className="relative cursor-pointer hover:bg-white/10 p-2 rounded-full transition">
-             <Bell size={20} className="text-blue-100" />
-             <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-[#1e3a8a]"></span>
-           </div>
-           
-           <div className="flex items-center gap-3 pl-5 border-l border-blue-800 cursor-pointer">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-white leading-tight">Aditya K.</p>
-                <p className="text-[10px] text-blue-300 font-medium">Citizen ID: 8829</p>
-              </div>
-              <div className="bg-[#172554] p-2 rounded-full border border-blue-700">
-                <User size={18} className="text-blue-200" />
-              </div>
-           </div>
+           {/* Only show user info when logged in and not on auth pages */}
+           {isLoggedIn && !isAuthPage && (
+             <>
+               <div className="relative cursor-pointer hover:bg-white/10 p-3 rounded-full transition">
+                 <Bell size={22} className="text-blue-100" />
+                 <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1e3a8a]"></span>
+               </div>
+               
+               <div className="flex items-center gap-4 pl-6 border-l border-blue-800 cursor-pointer">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-sm font-bold text-white leading-tight">{userName}</p>
+                    <p className="text-xs text-blue-300 font-medium">Citizen ID: {userId}</p>
+                  </div>
+                  <div className="bg-[#172554] p-2.5 rounded-full border border-blue-700">
+                    <User size={22} className="text-blue-200" />
+                  </div>
+               </div>
+             </>
+           )}
         </div>
       </header>
 
@@ -108,7 +124,7 @@ const MainLayout = () => {
               </div>
               <div>
                  <p className="text-xs font-black text-[#1e3a8a] uppercase tracking-wider">Suvidha Portal</p>
-                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">© 2026 Govt. of Maharashtra</p>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">© 2026 Govt. of India</p>
               </div>
             </div>
 

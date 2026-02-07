@@ -131,10 +131,10 @@ export const electricityAPI = {
  */
 export const waterAPI = {
   // Pay water bill
-  payBill: (customerId, amount) => {
+  payBill: (connectionId, amountPaise) => {
     return api.post('/water/pay-bill', {
-      customerId,
-      amount,
+      connectionId,
+      amountPaise,
     });
   },
 
@@ -180,11 +180,11 @@ export const gasAPI = {
   },
 
   // Report gas leakage (emergency)
-  reportLeakage: (phone, location) => {
-    return api.post('/gas/complaints/leakage', {
-      phone,
-      location,
-      description: 'Gas leak emergency',
+  reportLeakage: (formData) => {
+    return api.post('/gas/complaints/leakage', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
   },
 
@@ -250,10 +250,10 @@ export const wasteAPI = {
  */
 export const municipalAPI = {
   // Pay property tax
-  payPropertyTax: (propertyId, amount) => {
+  payPropertyTax: (propertyId, amountPaise) => {
     return api.post('/municipal/pay-property-tax', {
       propertyId,
-      amount,
+      amountPaise,
     });
   },
 
@@ -315,9 +315,9 @@ export const adminAPI = {
   },
 
   // Assign complaint to officer
-  assignComplaint: (complaintId, assignedTo) => {
+  assignComplaint: (complaintId, officerName) => {
     return api.put(`/admin/complaints/${complaintId}/assign`, {
-      assignedTo,
+      officerName,
     });
   },
 

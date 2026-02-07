@@ -35,14 +35,20 @@ const BillPayment = () => {
     setLoading(true);
     
     try {
-      // Call the API to fetch bill
-      const response = await electricityAPI.payBill(consumerId, 0); // 0 for fetching bill only
-      if (response.data.success) {
-        // Store bill details in session/context and navigate
-        sessionStorage.setItem('billData', JSON.stringify(response.data.data));
+      // Call the API to initiate payment - backend returns clientSecret
+      const response = await electricityAPI.payBill(consumerId, 0);
+      
+      // If we get a client secret, payment intent was created successfully
+      if (response.data.clientSecret) {
+        // Store payment data and navigate to summary
+        sessionStorage.setItem('billData', JSON.stringify({
+          consumerId,
+          clientSecret: response.data.clientSecret,
+          paymentIntentId: response.data.paymentIntentId,
+        }));
         navigate('/service/electricity/summary'); 
       } else {
-        setError(response.data.message || 'Bill not found');
+        setError('Unable to fetch bill details');
       }
     } catch (err) {
       console.error('Error fetching bill:', err);
@@ -80,7 +86,7 @@ const BillPayment = () => {
             
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
-                Consumer Number / ग्राहक क्रमांक
+                Consumer Number / उपभोक्ता नंबर
               </label>
               
               {/* The Display Box */}

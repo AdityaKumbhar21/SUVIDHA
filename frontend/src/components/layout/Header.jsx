@@ -1,7 +1,10 @@
 import React from 'react';
 import { Shield, Menu } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Header = () => {
+  const { lang, toggleLanguage } = useLanguage();
+
   return (
     <div className="w-full shadow-md relative z-50">
       
@@ -21,7 +24,7 @@ const Header = () => {
               सुविधा <span className="font-light opacity-50 mx-1">|</span> SUVIDHA
             </h1>
             <p className="text-[10px] md:text-xs font-bold text-blue-200 uppercase tracking-[0.2em] mt-1">
-              Government of Maharashtra • Citizen Interface
+              Government of India • Citizen Interface
             </p>
           </div>
         </div>
@@ -37,9 +40,12 @@ const Header = () => {
            </div>
 
            {/* Language Toggle Button */}
-           <button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2.5 text-xs font-black rounded-full shadow-lg border border-orange-400 active:scale-95 transition-all flex items-center gap-2">
-              <span>A</span>
-              <span>मराठी</span>
+           <button 
+              onClick={toggleLanguage}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2.5 text-xs font-black rounded-full shadow-lg border border-orange-400 active:scale-95 transition-all flex items-center gap-2"
+           >
+              <span>{lang === 'en' ? 'A' : 'अ'}</span>
+              <span>{lang === 'en' ? 'हिंदी' : 'English'}</span>
            </button>
         </div>
       </div>

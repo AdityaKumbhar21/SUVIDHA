@@ -1,5 +1,5 @@
 export const translations = {
-  EN: {
+  en: {
     welcome: "Welcome to Suvidha",
     dashboard: "Dashboard",
     selectService: "Select a Service",
@@ -13,18 +13,18 @@ export const translations = {
     billPay: "Pay Bill",
     reportOutage: "Report Issue"
   },
-  MAR: {
-    welcome: "सुविधा मध्ये आपले स्वागत आहे",
-    dashboard: "डॅशबोर्ड",
-    selectService: "सेवा निवडा",
-    electricity: "वीज विभाग",
-    water: "पाणी पुरवठा",
-    gas: "गॅस सेवा",
-    waste: "कचरा व्यवस्थापन",
-    emergency: "तातडीची मदत",
-    home: "मुख्यपृष्ठ",
-    footer: "सार्वजनिक सेवेसाठी डिझाइन केलेले • मदतीसाठी होम दाबा",
-    billPay: "बिल भरा",
-    reportOutage: "तक्रार नोंदवा"
+  hi: {
+    welcome: "सुविधा में आपका स्वागत है",
+    dashboard: "डैशबोर्ड",
+    selectService: "सेवा चुनें",
+    electricity: "बिजली विभाग",
+    water: "पानी आपूर्ति",
+    gas: "गैस सेवाएं",
+    waste: "कचरा प्रबंधन",
+    emergency: "आपातकालीन मदद",
+    home: "होम",
+    footer: "सार्वजनिक सेवा के लिए डिज़ाइन किया गया • सहायता के लिए होम दबाएं",
+    billPay: "बिल भरें",
+    reportOutage: "शिकायत दर्ज करें"
   }
 };

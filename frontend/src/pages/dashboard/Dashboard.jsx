@@ -12,8 +12,8 @@ const Dashboard = () => {
   const services = [
     {
       id: 'electricity',
-      name: lang === 'EN' ? 'Electricity' : 'वीज',
-      sub: lang === 'EN' ? 'Bill Pay & Outage Reports' : 'बिल भरणा आणि खंडित वीज',
+      name: lang === 'en' ? 'Electricity' : 'बिजली',
+      sub: lang === 'en' ? 'Bill Pay & Outage Reports' : 'बिल भुगतान एवं कटौती रिपोर्ट',
       icon: <Zap size={36} />,
       color: 'bg-[#10b981]',
       hoverBorder: 'hover:border-green-300',
@@ -21,8 +21,8 @@ const Dashboard = () => {
     },
     {
       id: 'water',
-      name: lang === 'EN' ? 'Water Supply' : 'पाणीपुरवठा',
-      sub: lang === 'EN' ? 'Supply Status & Billing' : 'स्थिती आणि बिलिंग',
+      name: lang === 'en' ? 'Water Supply' : 'पानी आपूर्ति',
+      sub: lang === 'en' ? 'Supply Status & Billing' : 'आपूर्ति स्थिति एवं बिलिंग',
       icon: <Droplet size={36} />,
       color: 'bg-[#1e3a8a]',
       hoverBorder: 'hover:border-blue-400',
@@ -30,8 +30,8 @@ const Dashboard = () => {
     },
     {
       id: 'gas',
-      name: lang === 'EN' ? 'Gas Services' : 'गॅस सेवा',
-      sub: lang === 'EN' ? 'Book Cylinder & Safety' : 'सिलेंडर बुकिंग आणि सुरक्षा',
+      name: lang === 'en' ? 'Gas Services' : 'गैस सेवाएं',
+      sub: lang === 'en' ? 'Book Cylinder & Safety' : 'सिलेंडर बुकिंग एवं सुरक्षा',
       icon: <Flame size={36} />,
       color: 'bg-[#f97316]',
       hoverBorder: 'hover:border-orange-300',
@@ -39,8 +39,8 @@ const Dashboard = () => {
     },
     {
       id: 'waste',
-      name: lang === 'EN' ? 'Waste Mgmt.' : 'कचरा व्यवस्थापन',
-      sub: lang === 'EN' ? 'Track Van & Pickup' : 'व्हॅन ट्रॅकिंग आणि पिकअप',
+      name: lang === 'en' ? 'Waste Mgmt.' : 'कचरा प्रबंधन',
+      sub: lang === 'en' ? 'Track Van & Pickup' : 'वाहन ट्रैकिंग एवं पिकअप',
       icon: <Trash2 size={36} />,
       color: 'bg-[#0d9488]',
       hoverBorder: 'hover:border-teal-300',
@@ -49,8 +49,8 @@ const Dashboard = () => {
     // ADDED: Municipal Services Module [cite: 41, 213]
     {
       id: 'municipal',
-      name: lang === 'EN' ? 'Municipal' : 'महानगरपालिका',
-      sub: lang === 'EN' ? 'Tax & Certificates' : 'कर आणि प्रमाणपत्रे',
+      name: lang === 'en' ? 'Municipal' : 'नगर निगम',
+      sub: lang === 'en' ? 'Tax & Certificates' : 'कर एवं प्रमाण पत्र',
       icon: <Building2 size={36} />,
       color: 'bg-[#7c3aed]', // Purple theme for Municipal
       hoverBorder: 'hover:border-purple-300',
@@ -84,11 +84,11 @@ const Dashboard = () => {
                </div>
                <input 
                  type="text" 
-                 placeholder={lang === 'EN' ? "Search 'Pay Bill', 'Trade License'..." : "शोधा 'बिल भरा', 'व्यापार परवाना'..."}
+                 placeholder={lang === 'en' ? "Search 'Pay Bill', 'Trade License'..." : "शोधा 'बिल भरा', 'व्यापार परवाना'..."}
                  className="flex-1 p-4 text-slate-700 font-medium outline-none text-base"
                />
                <button className="bg-[#1e3a8a] text-white px-8 py-3 rounded-lg font-bold text-sm tracking-wide">
-                 {lang === 'EN' ? 'SEARCH' : 'शोधा'}
+                 {lang === 'en' ? 'SEARCH' : 'शोधा'}
                </button>
             </div>
           </div>
