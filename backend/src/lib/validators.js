@@ -88,30 +88,28 @@ const getComplaintParams = z.object({
   id: z.string().uuid('Invalid complaint ID'),
 });
 
-const { z } = require('zod');
-
-billPaymentSchema = z.object({
+const billPaymentSchema = z.object({
   consumerNumber: z.string().min(5).max(50),
   amountPaise: z.number().int().positive().optional(),
 });
 
-outageComplaintSchema = z.object({
+const outageComplaintSchema = z.object({
   description: z.string().min(10).max(1000),
   location: z.string().max(200).optional(),
 });
 
-meterIssueSchema = z.object({
+const meterIssueSchema = z.object({
   description: z.string().min(10).max(1000),
   consumerNumber: z.string().min(5).max(50).optional(),
 });
 
-loadChangeSchema = z.object({
+const loadChangeSchema = z.object({
   requestedLoad: z.number().positive(),
   currentLoad: z.number().positive().optional(),
   reason: z.string().max(500),
 });
 
-newConnectionSchema = z.object({
+const newConnectionSchema = z.object({
   address: z.string().min(10).max(500),
   loadRequired: z.number().positive(),
 });
@@ -133,10 +131,6 @@ const billSchema = z.object({
 const leakageSchema = z.object({
   description: z.string().min(10),
   location: z.string().optional(),
-});
-
-const newConnectionSchema = z.object({
-  address: z.string().min(10),
 });
 
 module.exports = {

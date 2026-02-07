@@ -5,13 +5,13 @@ import api from '../api/axios';
  */
 export const authAPI = {
   // Send OTP to mobile number
-  sendOtp: (phone) => {
-    return api.post('/auth/send-otp', { phone });
+  sendOtp: (mobile) => {
+    return api.post('/auth/send-otp', { mobile });
   },
 
   // Verify OTP and authenticate user
-  verifyOtp: (phone, otp) => {
-    return api.post('/auth/verify-otp', { phone, otp });
+  verifyOtp: (mobile, otp) => {
+    return api.post('/auth/verify-otp', { mobile, otp });
   },
 
   // Logout (clear token)

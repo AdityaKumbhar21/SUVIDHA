@@ -1,12 +1,9 @@
 const twilio = require('twilio');
+const bcrypt = require('bcryptjs');
 const prisma = require('../lib/prisma');
+const { BadRequestError } = require('../lib/customError');
 
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-
-const bcrypt = require('bcryptjs');
-const twilio = require('twilio');
-const prisma = require('../lib/prisma');
-const { BadRequestError } = require('../utils/customError');
 
 
 const OTP_EXPIRY_MINUTES = 5;
@@ -71,8 +68,6 @@ async function verifyOtp(mobile, otp) {
   await prisma.otp.delete({ where: { id: record.id } });
   return true;
 }
-
-module.exports = { sendOtp, verifyOtp };
 
 
 async function sendNotification(userId, message, type = 'update') {

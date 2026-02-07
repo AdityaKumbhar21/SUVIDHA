@@ -30,4 +30,10 @@ class NotFoundError extends CustomError {
   }
 }
 
-module.exports = { CustomError, BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError };
+class ConflictError extends CustomError {
+  constructor(message = 'Conflict') {
+    super(409, message);
+  }
+}
+
+module.exports = { CustomError, BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError, ConflictError };

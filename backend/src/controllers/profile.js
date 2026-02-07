@@ -1,11 +1,11 @@
 // src/controllers/profile.js
 const prisma = require('../lib/prisma');
-const { NotFoundError, ConflictError } = require('../utils/customError');
+const { NotFoundError, ConflictError } = require('../lib/customError');
 const {
   profileUpdateSchema,
   addConnectionSchema,
   validate,
-} = require('../utils/validators');
+} = require('../lib/validators');
 
 
 async function getMyProfile(req, res, next) {

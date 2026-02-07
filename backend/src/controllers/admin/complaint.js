@@ -1,6 +1,6 @@
 const prisma = require('../../lib/prisma');
-const { NotFoundError, BadRequestError } = require('../../utils/customError');
-import { assignSchema, statusSchema } from '../../lib/validators';
+const { NotFoundError, BadRequestError } = require('../../lib/customError');
+const { assignSchema, statusSchema } = require('../../lib/validators');
 
 
 async function listComplaints(req, res, next) {

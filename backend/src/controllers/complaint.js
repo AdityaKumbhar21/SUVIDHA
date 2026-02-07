@@ -1,17 +1,17 @@
 const prisma = require('../lib/prisma');
 const { classifyComplaint } = require('../services/gemini');
-const { sendNotification } = require('../services/notification');
+const { sendNotification } = require('../services/twilio');
 const { uploadToCloudinary } = require('../services/upload');
 const {
   BadRequestError,
   NotFoundError,
   ForbiddenError,
-} = require('../utils/customError');
+} = require('../lib/customError');
 const {
   createComplaintSchema,
   getComplaintParams,
   validate,
-} = require('../utils/validators');
+} = require('../lib/validators');
 
 
 async function createComplaint(req, res, next) {

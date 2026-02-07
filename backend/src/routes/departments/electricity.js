@@ -7,7 +7,7 @@ const {
   raiseMeterIssue,
   requestLoadChange,
   requestNewConnection,
-} = require('../../controllers/departments/electricity.controller');
+} = require('../../controllers/departments/electricity');
 
 const router = express.Router();
 

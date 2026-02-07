@@ -4,7 +4,7 @@ const {
   createPaymentIntentHandler,
   getMyPayments,
   stripeWebhook,
-} = require('../controllers/payment');
+} = require('../controllers/payments');
 
 const router = express.Router();
 

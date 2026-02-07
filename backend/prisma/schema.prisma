@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -69,7 +69,7 @@ enum PaymentStatus {
 // Models
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @default(uuid()) @db.VarChar(36)
   mobile    String   @unique
   name      String?
   address   String?
@@ -91,8 +91,8 @@ model User {
 
 
 model UtilityConnection {
-  id             String         @id @default(uuid()) @db.Uuid
-  userId         String         @db.Uuid
+  id             String         @id @default(uuid()) @db.VarChar(36)
+  userId         String         @db.VarChar(36)
   type           ConnectionType
   consumerNumber String
   createdAt      DateTime       @default(now())
@@ -106,8 +106,8 @@ model UtilityConnection {
 
 
 model Complaint {
-  id             String           @id @default(uuid()) @db.Uuid
-  userId         String           @db.Uuid
+  id             String           @id @default(uuid()) @db.VarChar(36)
+  userId         String           @db.VarChar(36)
   department     Department
   complaintType  ComplaintType
   description    String?
@@ -130,9 +130,9 @@ model Complaint {
 
 
 model Payment {
-  id                    String         @id @default(uuid()) @db.Uuid
-  userId                String         @db.Uuid
-  complaintId           String?        @unique @db.Uuid
+  id                    String         @id @default(uuid()) @db.VarChar(36)
+  userId                String         @db.VarChar(36)
+  complaintId           String?        @unique @db.VarChar(36)
   amountPaise           BigInt
   stripePaymentIntentId String?        @unique @map("stripe_payment_intent_id")
   status                PaymentStatus  @default(PENDING)
@@ -149,8 +149,8 @@ model Payment {
 
 
 model Notification {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  userId    String   @db.VarChar(36)
   type      String
   message   String
   twilioSid String?  @map("twilio_sid")
@@ -165,9 +165,9 @@ model Notification {
 
 
 model Feedback {
-  id           String    @id @default(uuid()) @db.Uuid
-  complaintId  String    @unique@db.Uuid
-  userId       String    @db.Uuid
+  id           String    @id @default(uuid()) @db.VarChar(36)
+  complaintId  String    @unique @db.VarChar(36)
+  userId       String    @db.VarChar(36)
   text         String
   sentiment    String?
 
@@ -193,8 +193,8 @@ model Otp {
 
 
 model AuditLog {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String?  @db.Uuid
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  userId    String?  @db.VarChar(36)
   action    String
   details   Json?
   timestamp DateTime @default(now())

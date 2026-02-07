@@ -7,7 +7,7 @@ const {
   raiseLowPressureComplaint,
   raiseWaterMeterIssue,
   requestNewWaterConnection,
-} = require('../../controllers/departments/water.controller');
+} = require('../../controllers/departments/water');
 
 const router = express.Router();
 

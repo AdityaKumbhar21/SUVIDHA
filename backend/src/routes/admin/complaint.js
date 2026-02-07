@@ -6,7 +6,7 @@ const {
   getComplaintDetails,
   assignComplaint,
   updateComplaintStatus,
-} = require('../../controllers/admin/complaints.controller');
+} = require('../../controllers/admin/complaint');
 
 const router = express.Router();
 

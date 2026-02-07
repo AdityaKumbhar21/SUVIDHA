@@ -1,7 +1,7 @@
 const twilio = require('twilio');
 const bcrypt = require('bcryptjs');
 const prisma = require('../lib/prisma');
-const { BadRequestError } = require('../utils/customError');
+const { BadRequestError } = require('../lib/customError');
 
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 

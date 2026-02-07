@@ -4,7 +4,7 @@ const {
   getComplaintStats,
   getSlaStats,
   getPaymentStats,
-} = require('../../controllers/admin/analytics.controller');
+} = require('../../controllers/admin/analytics');
 
 const router = express.Router();
 

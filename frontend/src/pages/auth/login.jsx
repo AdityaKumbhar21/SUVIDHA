@@ -23,10 +23,10 @@ const Login = () => {
     setError('');
   };
 
-  // Handle OTP Input (4 digits max)
+  // Handle OTP Input (6 digits max)
   const handleOtpChange = (e) => {
     const value = e.target.value;
-    if (/^\d{0,4}$/.test(value)) setOtp(value);
+    if (/^\d{0,6}$/.test(value)) setOtp(value);
     setError('');
   };
 
@@ -50,7 +50,7 @@ const Login = () => {
         }
       } else {
         // Step 2: Verify OTP
-        if (otp.length === 4) {
+        if (otp.length === 6) {
           const response = await authAPI.verifyOtp('+91' + mobile, otp);
           if (response.data.success) {
             // Save token to localStorage
@@ -64,7 +64,7 @@ const Login = () => {
             setError(response.data.message || (lang === 'EN' ? 'Invalid OTP' : 'अमान्य OTP'));
           }
         } else {
-          setError(lang === 'EN' ? "Please enter valid 4-digit OTP" : "कृपया वैध ४ अंकी OTP प्रविष्ट करा");
+          setError(lang === 'EN' ? "Please enter valid 6-digit OTP" : "कृपया वैध ६ अंकी OTP प्रविष्ट करा");
         }
       }
     } catch (err) {
