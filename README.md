@@ -913,5 +913,5 @@ Admin Login → Dashboard → View Complaints → Assign Officer → Update Stat
 </p>
 
 <p align="center">
-  <sub>Built for the Smart Urban Digital Helpdesk Assistant Challenge · Government of India · 2025</sub>
+  <sub>Built for the Smart Urban Digital Helpdesk Assistant Challenge · Government of India · 2026</sub>
 </p>
