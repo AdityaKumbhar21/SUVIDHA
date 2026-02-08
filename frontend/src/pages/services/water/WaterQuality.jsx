@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, MapPin, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle, MapPin } from 'lucide-react';
 import { waterAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 
-const WaterComplaint = () => {
+const WaterQuality = () => {
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const [description, setDescription] = useState('');
@@ -15,12 +15,13 @@ const WaterComplaint = () => {
 
   const handleSubmit = async () => {
     if (!description || description.length < 10) return;
+
     setSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append('description', description);
-      if (location) formData.append('location', location);
-      const response = await waterAPI.reportNoSupply(formData);
+      const response = await waterAPI.reportMeterIssue({
+        description: `Water quality issue: ${description}`,
+        location: location || undefined,
+      });
       setSuccess(response.data.complaintId);
       setTimeout(() => navigate('/dashboard'), 3000);
     } catch (err) {
@@ -37,7 +38,7 @@ const WaterComplaint = () => {
             <CheckCircle size={48} className="text-green-600" />
           </div>
           <h2 className="text-2xl font-black text-slate-800 mb-2">{lang === 'en' ? 'Complaint Registered!' : 'शिकायत दर्ज!'}</h2>
-          <p className="text-slate-500 text-sm">{lang === 'en' ? 'Team will be dispatched to your area.' : 'आपके क्षेत्र में टीम भेजी जाएगी।'}</p>
+          <p className="text-slate-500 text-sm">{lang === 'en' ? 'Water quality team has been notified.' : 'जल गुणवत्ता टीम को सूचित किया गया है।'}</p>
           <div className="mt-4 bg-slate-50 px-4 py-2 rounded-full text-xs font-mono text-slate-500">ID: {success}</div>
         </motion.div>
       </div>
@@ -52,37 +53,57 @@ const WaterComplaint = () => {
         </button>
         <div>
           <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">
-            {lang === 'en' ? 'No Water Supply' : 'पानी की आपूर्ति नहीं'}
+            {lang === 'en' ? 'Water Quality Issue' : 'पानी की गुणवत्ता समस्या'}
           </h1>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Report water supply issues in your area' : 'अपने क्षेत्र में पानी की समस्या की रिपोर्ट करें'}</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Report dirty or contaminated water' : 'गंदे या दूषित पानी की शिकायत करें'}</p>
         </div>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
+
           <div>
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
               <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Location' : 'स्थान'}
+              {lang === 'en' ? 'Your Location / Area' : 'आपका स्थान / क्षेत्र'}
             </label>
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'Area, ward, street name' : 'क्षेत्र, वार्ड, सड़क का नाम'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              disabled={submitting}
+              placeholder={lang === 'en' ? 'Area, street, ward number' : 'क्षेत्र, सड़क, वार्ड नंबर'}
+              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50"
+            />
           </div>
+
           <div>
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
+              {lang === 'en' ? 'Describe the Problem' : 'समस्या का वर्णन करें'}
             </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. No water supply since morning, the whole lane is affected...' : 'जैसे सुबह से पानी नहीं आ रहा, पूरी गली प्रभावित है...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={submitting}
+              placeholder={lang === 'en' ? 'e.g. Water is yellow/brown in color, has bad smell, contains particles...' : 'जैसे पानी पीले/भूरे रंग का है, बदबू आ रही है...'}
+              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
+            />
             <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters' : 'कम से कम 10 अक्षर'}</p>
           </div>
+
         </div>
+
         <div className="p-6 border-t border-slate-100 bg-slate-50">
-          <button onClick={handleSubmit} disabled={!description || description.length < 10 || submitting}
-            className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
-            {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>) : (<><Send size={20} /> {lang === 'en' ? 'Submit Complaint' : 'शिकायत दर्ज करें'}</>)}
+          <button
+            onClick={handleSubmit}
+            disabled={!description || description.length < 10 || submitting}
+            className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+          >
+            {submitting ? (
+              <><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>
+            ) : (
+              <><Send size={20} /> {lang === 'en' ? 'Submit Report' : 'रिपोर्ट सबमिट करें'}</>
+            )}
           </button>
         </div>
       </div>
@@ -90,4 +111,4 @@ const WaterComplaint = () => {
   );
 };
 
-export default WaterComplaint;
+export default WaterQuality;

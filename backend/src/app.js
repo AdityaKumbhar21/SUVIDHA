@@ -4,7 +4,6 @@ const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const multer = require('multer');
 const errorMiddleware = require('./middleware/error');
 const authRoutes = require('./routes/auth');
 const complaintRoutes = require('./routes/complaint');
@@ -18,7 +17,7 @@ const paymentRoutes = require('./routes/payment');
 const adminComplaintRoutes = require('./routes/admin/complaint');
 const adminAnalyticsRoutes = require('./routes/admin/analytics');
 const { languageMiddleware } = require('./middleware/language');
-
+const { stripeWebhook } = require('./controllers/payments');
 
 
 
@@ -27,6 +26,12 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
+
+app.post(
+  '/api/payment/webhook',
+  express.raw({ type: 'application/json' }),
+  stripeWebhook
+)
 app.use(express.json({ limit: '10mb' }));
 
 const limiter = rateLimit({
@@ -34,19 +39,6 @@ const limiter = rateLimit({
   max: 200,
 });
 app.use(limiter);
-
-
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
-      cb(null, true);
-    } else {
-      cb(new Error('Only images and PDFs allowed'));
-    }
-  },
-});
 
 
 app.get('/health', (_req, res) => {
@@ -64,13 +56,12 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/complaint', complaintRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/electricity', electricityRoutes);
-app.use('/electricity', electricityRoutes);
-app.use('/gas', gasRoutes);
-app.use('/water', waterRoutes);
-app.use('/waste', wasteRoutes);
-app.use('/municipal', municipalRoutes);
-app.use('/admin/complaints', adminComplaintRoutes);
-app.use('/admin/analytics', adminAnalyticsRoutes);
+app.use('/api/gas', gasRoutes);
+app.use('/api/water', waterRoutes);
+app.use('/api/waste', wasteRoutes);
+app.use('/api/municipal', municipalRoutes);
+app.use('/api/admin/complaints', adminComplaintRoutes);
+app.use('/api/admin/analytics', adminAnalyticsRoutes);
 
 
 app.use(errorMiddleware);

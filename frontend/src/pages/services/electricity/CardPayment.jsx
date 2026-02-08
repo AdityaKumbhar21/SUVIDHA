@@ -18,6 +18,7 @@ const CardPayment = () => {
   const [processing, setProcessing] = useState(false);
   const [stage, setStage] = useState('form'); // 'form' | 'processing' | 'verifying'
   const [error, setError] = useState('');
+  const stageRef = React.useRef('form');
 
   // Redirect if no bill data
   useEffect(() => {
@@ -61,10 +62,12 @@ const CardPayment = () => {
     setError('');
     setProcessing(true);
     setStage('processing');
+    stageRef.current = 'processing';
 
     // Simulate bank processing with stages
     await new Promise(r => setTimeout(r, 2000));
     setStage('verifying');
+    stageRef.current = 'verifying';
     await new Promise(r => setTimeout(r, 1500));
 
     try {
@@ -92,7 +95,7 @@ const CardPayment = () => {
       console.error('Payment failed:', err);
       // Even on error, if we already showed processing animation, 
       // mark as success with billData fallback (demo mode)
-      if (stage === 'verifying') {
+      if (stageRef.current === 'verifying') {
         sessionStorage.setItem('paymentResult', JSON.stringify({
           paymentId: storedBill.paymentId || '',
           amountPaise: storedBill.amountPaise || 0,
@@ -180,21 +183,21 @@ const CardPayment = () => {
   }
 
   return (
-    <div className="h-full flex flex-col relative z-10 max-w-lg mx-auto pb-10">
+    <div className="h-full flex flex-col max-w-lg mx-auto pb-10">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="p-2.5 bg-white rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 active:scale-95 transition-all"
+          className="p-3 bg-white rounded-xl border-2 border-slate-200 text-slate-400 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all active:scale-95"
         >
           <ChevronLeft size={22} />
         </button>
         <div>
-          <h1 className="text-xl font-black text-[#1A365D]">
+          <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">
             {lang === 'en' ? 'Payment' : 'भुगतान'}
           </h1>
-          <p className="text-slate-400 text-xs font-medium">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
             {lang === 'en' ? 'Secure card payment' : 'सुरक्षित कार्ड भुगतान'}
           </p>
         </div>
@@ -204,7 +207,7 @@ const CardPayment = () => {
       <motion.div
         initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-gradient-to-r from-[#1A365D] to-[#2D4A7A] text-white rounded-2xl p-6 mb-6 flex items-center justify-between"
+        className="bg-[#1e3a8a] text-white rounded-2xl p-6 mb-6 flex items-center justify-between"
       >
         <div>
           <p className="text-blue-200 text-xs font-bold uppercase tracking-wider">
@@ -318,7 +321,7 @@ const CardPayment = () => {
         <button
           onClick={handlePay}
           disabled={processing}
-          className="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold text-lg shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+          className="w-full py-4 mt-2 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
         >
           <Lock size={18} />
           {lang === 'en' ? `Pay ₹${amountRupees}` : `₹${amountRupees} भुगतान करें`}

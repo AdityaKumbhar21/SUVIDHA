@@ -12,13 +12,12 @@ import Welcome from './pages/Welcome';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 
-// UPDATED: Identity & Admin Imports [cite: 69, 346]
+// Identity & Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProfileCreation from './pages/auth/ProfileCreation';
 
-// Add import at the top
+// Feedback
 import Feedback from './pages/services/Feedback';
-
 
 // 1. Electricity Department
 import Electricity from './pages/services/Electricity';
@@ -27,20 +26,35 @@ import BillSummary from './pages/services/electricity/BillSummary';
 import CardPayment from './pages/services/electricity/CardPayment';
 import PaymentSuccess from './pages/services/electricity/PaymentSuccess';
 import OutageComplaint from './pages/services/electricity/OutageComplaint';
+import NewConnection from './pages/services/electricity/NewConnection';
+import MeterIssue from './pages/services/electricity/MeterIssue';
+import LoadChange from './pages/services/electricity/LoadChange';
 
 // 2. Water Department
 import Water from './pages/services/Water';
 import WaterComplaint from './pages/services/water/WaterComplaint';
+import WaterLeakage from './pages/services/water/WaterLeakage';
+import WaterQuality from './pages/services/water/WaterQuality';
+import WaterBillPayment from './pages/services/water/WaterBillPayment';
 
 // 3. Gas Department
 import Gas from './pages/services/Gas';
 import BookCylinder from './pages/services/gas/BookCylinder';
-// Import the new page
 import GasLeakage from './pages/services/gas/GasLeakage';
+import GasNewConnection from './pages/services/gas/GasNewConnection';
+import CylinderIssue from './pages/services/gas/CylinderIssue';
 
 // 4. Waste Department
 import Waste from './pages/services/Waste';
-import TrackVan from './pages/services/waste/TrackVan';
+import MissedPickup from './pages/services/waste/MissedPickup';
+import OverflowingBin from './pages/services/waste/OverflowingBin';
+import BulkPickup from './pages/services/waste/BulkPickup';
+
+// 5. Municipal Department
+import Municipal from './pages/services/Municipal';
+import PropertyTax from './pages/services/municipal/PropertyTax';
+import CertificateRequest from './pages/services/municipal/CertificateRequest';
+import MunicipalGrievance from './pages/services/municipal/MunicipalGrievance';
 
 // Wrapper for Animation (needs useLocation hook)
 const AnimatedRoutes = () => {
@@ -75,20 +89,35 @@ const AnimatedRoutes = () => {
           <Route path="service/electricity/card-payment" element={<PageTransition><CardPayment /></PageTransition>} />
           <Route path="service/electricity/success" element={<PageTransition><PaymentSuccess /></PageTransition>} />
           <Route path="service/electricity/outage" element={<PageTransition><OutageComplaint /></PageTransition>} />
+          <Route path="service/electricity/new" element={<PageTransition><NewConnection /></PageTransition>} />
+          <Route path="service/electricity/meter" element={<PageTransition><MeterIssue /></PageTransition>} />
+          <Route path="service/electricity/load" element={<PageTransition><LoadChange /></PageTransition>} />
 
           {/* Water */}
           <Route path="service/water" element={<PageTransition><Water /></PageTransition>} />
-          <Route path="service/water/pay" element={<div className="p-10 text-xl font-bold">Water Bill Payment Coming Soon...</div>} />
+          <Route path="service/water/pay" element={<PageTransition><WaterBillPayment /></PageTransition>} />
           <Route path="service/water/complaint" element={<PageTransition><WaterComplaint /></PageTransition>} />
+          <Route path="service/water/leakage" element={<PageTransition><WaterLeakage /></PageTransition>} />
+          <Route path="service/water/quality" element={<PageTransition><WaterQuality /></PageTransition>} />
 
           {/* Gas */}
           <Route path="service/gas" element={<PageTransition><Gas /></PageTransition>} />
           <Route path="service/gas/book" element={<PageTransition><BookCylinder /></PageTransition>} />
           <Route path="service/gas/leakage" element={<PageTransition><GasLeakage /></PageTransition>} />
+          <Route path="service/gas/new" element={<PageTransition><GasNewConnection /></PageTransition>} />
+          <Route path="service/gas/cylinder-issue" element={<PageTransition><CylinderIssue /></PageTransition>} />
 
           {/* Waste */}
           <Route path="service/waste" element={<PageTransition><Waste /></PageTransition>} />
-          <Route path="service/waste/track" element={<PageTransition><TrackVan /></PageTransition>} />
+          <Route path="service/waste/missed-pickup" element={<PageTransition><MissedPickup /></PageTransition>} />
+          <Route path="service/waste/overflow" element={<PageTransition><OverflowingBin /></PageTransition>} />
+          <Route path="service/waste/bulk-pickup" element={<PageTransition><BulkPickup /></PageTransition>} />
+
+          {/* Municipal */}
+          <Route path="service/municipal" element={<PageTransition><Municipal /></PageTransition>} />
+          <Route path="service/municipal/tax" element={<PageTransition><PropertyTax /></PageTransition>} />
+          <Route path="service/municipal/certificate" element={<PageTransition><CertificateRequest /></PageTransition>} />
+          <Route path="service/municipal/grievance" element={<PageTransition><MunicipalGrievance /></PageTransition>} />
           
 
         </Route>

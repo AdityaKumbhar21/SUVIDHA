@@ -74,18 +74,27 @@ export const translations = {
     gasNewConnectionSub: "Apply for a new gas connection",
     checkSubsidy: "Check Subsidy",
     checkSubsidySub: "View your subsidy transfer status",
+    cylinderIssue: "Cylinder Issue",
+    cylinderIssueSub: "Report cylinder defects or issues",
     gasEmergencyHelpline: "Emergency Leak Helpline: 1906",
     gasEmergencyWarning: "AI Marked CRITICAL: Do not switch on/off any electrical switches if you smell gas.",
 
     // Waste Services
     wasteManagement: "Waste Management",
     wasteDept: "Swachh Bharat Mission",
+    wasteSub: "Report & Schedule Pickup",
     trackVan: "Track Garbage Van",
     trackVanSub: "Live GPS location of pickup truck",
     schedulePickup: "Schedule Pickup",
     schedulePickupSub: "Request pickup for bulk waste",
     recyclingCenters: "Recycling Centers",
     recyclingCentersSub: "Find nearest e-waste drop location",
+    missedPickup: "Missed Pickup",
+    missedPickupSub: "Report a missed garbage collection",
+    overflowingBin: "Overflowing Bin",
+    overflowingBinSub: "Report an overflowing dustbin",
+    bulkPickup: "Bulk Waste Pickup",
+    bulkPickupSub: "Request pickup for large/bulk items",
 
     // Municipal Services
     municipalServices: "Municipal Services",
@@ -96,6 +105,8 @@ export const translations = {
     certificatesSub: "Birth, Death & Marriage",
     tradeLicense: "Trade License",
     tradeLicenseSub: "Apply or renew business license",
+    municipalGrievance: "File Grievance",
+    municipalGrievanceSub: "Report civic issues & concerns",
     docAIVerification: "Document AI Verification",
     docAIVerificationDesc: "Automated OCR verification active for all certificate and tax requests.",
 
@@ -210,18 +221,27 @@ export const translations = {
     gasNewConnectionSub: "नए गैस कनेक्शन के लिए आवेदन करें",
     checkSubsidy: "सब्सिडी जांचें",
     checkSubsidySub: "अपनी सब्सिडी हस्तांतरण स्थिति देखें",
+    cylinderIssue: "सिलेंडर समस्या",
+    cylinderIssueSub: "सिलेंडर दोष या समस्याओं की रिपोर्ट करें",
     gasEmergencyHelpline: "आपातकालीन गैस रिसाव हेल्पलाइन: 1906",
     gasEmergencyWarning: "AI द्वारा गंभीर चिह्नित: गैस की गंध आने पर कोई भी बिजली का स्विच चालू/बंद न करें।",
 
     // Waste Services
     wasteManagement: "कचरा प्रबंधन",
     wasteDept: "स्वच्छ भारत मिशन",
+    wasteSub: "रिपोर्ट और पिकअप शेड्यूल करें",
     trackVan: "कचरा वाहन ट्रैक करें",
     trackVanSub: "पिकअप ट्रक की लाइव GPS स्थिति",
     schedulePickup: "पिकअप शेड्यूल करें",
     schedulePickupSub: "बड़े कचरे के लिए पिकअप अनुरोध",
     recyclingCenters: "रीसाइक्लिंग केंद्र",
     recyclingCentersSub: "निकटतम ई-कचरा डिपो खोजें",
+    missedPickup: "छूटा हुआ पिकअप",
+    missedPickupSub: "छूटे हुए कचरा संग्रहण की रिपोर्ट करें",
+    overflowingBin: "ओवरफ्लोइंग डस्टबिन",
+    overflowingBinSub: "भरे हुए कूड़ेदान की रिपोर्ट करें",
+    bulkPickup: "बड़ा कचरा पिकअप",
+    bulkPickupSub: "बड़े/भारी सामान के लिए पिकअप अनुरोध",
 
     // Municipal Services
     municipalServices: "नगर निगम सेवाएं",
@@ -232,6 +252,8 @@ export const translations = {
     certificatesSub: "जन्म, मृत्यु एवं विवाह",
     tradeLicense: "व्यापार लाइसेंस",
     tradeLicenseSub: "व्यवसाय लाइसेंस के लिए आवेदन करें",
+    municipalGrievance: "शिकायत दर्ज करें",
+    municipalGrievanceSub: "नागरिक मुद्दों और चिंताओं की रिपोर्ट करें",
     docAIVerification: "दस्तावेज़ AI सत्यापन",
     docAIVerificationDesc: "सभी प्रमाण पत्र और कर अनुरोधों के लिए स्वचालित OCR सत्यापन सक्रिय।",
 

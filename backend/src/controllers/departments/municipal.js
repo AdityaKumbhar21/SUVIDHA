@@ -2,6 +2,7 @@ const prisma = require('../../lib/prisma');
 const { createPaymentIntent } = require('../../services/stripe');
 const { sendNotification } = require('../../services/twilio');
 const { uploadToCloudinary } = require('../../services/upload');
+const { classifyComplaint } = require('../../services/gemini');
 const { z } = require('zod');
 
 const Department = 'MUNICIPAL';
@@ -31,6 +32,12 @@ async function payPropertyTax(req, res, next) {
         service: 'PROPERTY_TAX',
       });
 
+    sendNotification(
+      req.user.id,
+      `Property tax payment initiated for ${propertyId}. Amount: ₹${(amountPaise / 100).toFixed(0)}.`,
+      'payment_initiated'
+    ).catch(() => {});
+
     res.json({ clientSecret, paymentIntentId });
   } catch (err) {
     next(err);
@@ -40,6 +47,7 @@ async function payPropertyTax(req, res, next) {
 async function submitMunicipalGrievance(req, res, next) {
   try {
     const { description, location } = grievanceSchema.parse(req.body);
+    const language = req.headers['x-language'] || 'en';
 
     let photoUrl = null;
     if (req.file?.buffer) {
@@ -49,26 +57,75 @@ async function submitMunicipalGrievance(req, res, next) {
       );
     }
 
+    // AI Classification
+    const ai = await classifyComplaint(description, language);
+
+    const finalDepartment = ai.department || Department;
+    const finalType = ai.complaintType || 'GENERAL';
+    const finalPriority = ai.priority || 'MEDIUM';
+    const finalEta = ai.etaMinutes || 2880;
+
+    // Check for duplicate
+    const recentSimilar = await prisma.complaint.findFirst({
+      where: {
+        userId: req.user.id,
+        department: finalDepartment,
+        complaintType: finalType,
+        createdAt: {
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        },
+      },
+      select: { id: true },
+    });
+
+    if (recentSimilar || ai.isDuplicateLikely) {
+      return res.status(409).json({
+        error: 'Possible duplicate complaint detected',
+        existingComplaintId: recentSimilar?.id,
+      });
+    }
+
+    let finalLocation = location;
+    if (!finalLocation) {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { address: true },
+      });
+      finalLocation = user?.address ?? 'Unknown';
+    }
+
     const complaint = await prisma.complaint.create({
       data: {
         userId: req.user.id,
-        department: Department,
-        complaintType: 'GENERAL',
+        department: finalDepartment,
+        complaintType: finalType,
         description,
-        location,
+        location: finalLocation,
         photoUrl,
-        priority: 'MEDIUM',
-        etaMinutes: 2880,
+        priority: finalPriority,
+        etaMinutes: finalEta,
+        status: 'SUBMITTED',
       },
     });
 
     await sendNotification(
       req.user.id,
-      `Municipal grievance submitted (#${complaint.id}).`,
+      `Municipal grievance submitted (#${complaint.id}). Priority: ${finalPriority}. ETA: ${Math.ceil(finalEta / 60)} hours.`,
       'complaint_created'
     );
 
-    res.status(201).json({ complaintId: complaint.id });
+    res.status(201).json({
+      complaintId: complaint.id,
+      complaint: {
+        id: complaint.id,
+        department: complaint.department,
+        complaintType: complaint.complaintType,
+        status: complaint.status,
+        priority: complaint.priority,
+        etaMinutes: complaint.etaMinutes,
+        createdAt: complaint.createdAt,
+      },
+    });
   } catch (err) {
     next(err);
   }

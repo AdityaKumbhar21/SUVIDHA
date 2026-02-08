@@ -224,7 +224,12 @@ export const gasAPI = {
 
   // Book cylinder
   bookCylinder: (data) => {
-    return api.post('/gas/requests/new-connection', data); // Reusing the same endpoint
+    return api.post('/gas/book-cylinder', data);
+  },
+
+  // Lookup user by mobile for kiosk
+  lookupByMobile: (mobile) => {
+    return api.post('/gas/lookup-mobile', { mobile });
   },
 };
 

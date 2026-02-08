@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const prisma = require('../lib/prisma');
-const { sendOtp, verifyOtp } = require('../services/otp');
+const { sendOtp, verifyOtp } = require('../services/twilio');
 const { validate, sendOtpSchema, verifyOtpSchema } = require('../lib/validators');
 const { UnauthorizedError } = require('../lib/customError');
 

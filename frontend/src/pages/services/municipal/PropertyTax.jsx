@@ -1,123 +1,86 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Landmark, Search, CreditCard, ChevronLeft, ShieldCheck, Receipt } from 'lucide-react';
+import { CreditCard, ChevronLeft, ShieldCheck, Loader2 } from 'lucide-react';
+import { municipalAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 
 const PropertyTax = () => {
   const navigate = useNavigate();
   const { lang } = useLanguage();
   const [propertyId, setPropertyId] = useState('');
-  const [step, setStep] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
+  const [amountRupees, setAmountRupees] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  // Bill Fetching Logic as per Identity Logic [cite: 14, 117]
-  const handleFetchBill = (e) => {
+  const handleProceedToPay = async (e) => {
     e.preventDefault();
-    setIsFetching(true);
-    setTimeout(() => {
-      setIsFetching(false);
-      setStep(2);
-    }, 1500);
+    if (!propertyId || !amountRupees || parseFloat(amountRupees) <= 0) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const amountPaise = Math.round(parseFloat(amountRupees) * 100);
+      const response = await municipalAPI.payPropertyTax(propertyId, amountPaise);
+      const { clientSecret, paymentIntentId } = response.data;
+
+      sessionStorage.setItem('billData', JSON.stringify({
+        consumerId: propertyId,
+        amountRupees: parseFloat(amountRupees).toFixed(2),
+        amountPaise,
+        clientSecret,
+        paymentIntentId,
+        service: 'Property Tax',
+      }));
+      navigate('/service/electricity/card-payment');
+    } catch (err) {
+      setError(err.response?.data?.message || (lang === 'en' ? 'Payment initiation failed. Try again.' : 'भुगतान प्रारंभ विफल। पुनः प्रयास करें।'));
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center bg-slate-50 p-6 min-h-screen">
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-        
-        {/* Header - Municipal Branding [cite: 220] */}
-        <div className="bg-[#7c3aed] p-6 text-white flex items-center gap-4">
-          <button onClick={() => navigate('/service/municipal')} className="hover:bg-white/10 p-2 rounded-full">
-            <ChevronLeft size={24} />
-          </button>
-          <div>
-            <h1 className="text-xl font-black uppercase tracking-tight">
-              {lang === 'en' ? 'Property Tax Payment' : 'संपत्ति कर भुगतान'}
-            </h1>
-            <p className="text-purple-100 text-[10px] font-bold uppercase tracking-widest">
-              {lang === 'en' ? 'Secure Revenue Portal' : 'सुरक्षित महसूल पोर्टल'}
-            </p>
-          </div>
+    <div className="h-full flex flex-col max-w-2xl mx-auto">
+      <div className="flex items-center gap-4 mb-6">
+        <button onClick={() => navigate(-1)} className="p-3 bg-white rounded-xl border-2 border-slate-200 text-slate-400 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all active:scale-95">
+          <ChevronLeft size={24} />
+        </button>
+        <div>
+          <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">
+            {lang === 'en' ? 'Property Tax Payment' : 'संपत्ति कर भुगतान'}
+          </h1>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Secure Revenue Portal' : 'सुरक्षित महसूल पोर्टल'}</p>
         </div>
+      </div>
 
-        <div className="p-8">
-          {/* STEP 1: ENTER PROPERTY ID [cite: 115] */}
-          {step === 1 && (
-            <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleFetchBill} className="space-y-6">
-              <div>
-                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
-                  {lang === 'en' ? 'Enter Property ID / Index No.' : 'संपत्ति आईडी / इंडेक्स नंबर दर्ज करें'}
-                </label>
-                <div className="flex items-center border-2 border-slate-100 rounded-2xl px-5 py-4 bg-slate-50 focus-within:border-[#7c3aed] focus-within:bg-white transition-all">
-                  <Landmark className="text-slate-400" size={24} />
-                  <input 
-                    required
-                    type="text"
-                    value={propertyId}
-                    onChange={(e) => setPropertyId(e.target.value)}
-                    placeholder="Ex: TAX-PN-100293"
-                    className="flex-1 bg-transparent outline-none ml-4 font-bold text-lg text-slate-700"
-                  />
-                </div>
-              </div>
-              
-              <button 
-                type="submit"
-                disabled={isFetching}
-                className="w-full bg-[#7c3aed] text-white py-5 rounded-2xl font-black text-xl shadow-xl flex items-center justify-center gap-3 hover:bg-purple-700 transition-all"
-              >
-                {isFetching ? '...' : (lang === 'en' ? 'FETCH BILL DETAILS' : 'बिल तपशील मिळवा')}
-                <Search size={24} />
-              </button>
-            </motion.form>
-          )}
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
+        <form onSubmit={handleProceedToPay} className="p-6 flex-1 flex flex-col gap-6">
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
+              {lang === 'en' ? 'Property ID / Index No.' : 'संपत्ति आईडी / इंडेक्स नंबर'}
+            </label>
+            <input type="text" required value={propertyId} onChange={(e) => setPropertyId(e.target.value)} disabled={submitting}
+              placeholder="Ex: TAX-PN-100293"
+              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
+              {lang === 'en' ? 'Tax Amount (₹)' : 'कर राशि (₹)'}
+            </label>
+            <input type="number" required min="1" step="0.01" value={amountRupees} onChange={(e) => setAmountRupees(e.target.value)} disabled={submitting}
+              placeholder="e.g. 4350.00"
+              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
+          </div>
+          {error && <p className="text-sm text-red-600 font-bold animate-pulse">{error}</p>}
+        </form>
 
-          {/* STEP 2: BILL SUMMARY & STRIPE PAY [cite: 45, 119] */}
-          {step === 2 && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-              <div className="bg-purple-50 rounded-2xl p-6 border border-purple-100">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h3 className="font-black text-slate-800 text-lg uppercase tracking-tight">Aditya K.</h3>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Shaniwar Peth, Pune</p>
-                  </div>
-                  <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-purple-100 text-center">
-                    <p className="text-[10px] font-black text-purple-600 uppercase">Tax Year</p>
-                    <p className="font-bold text-slate-700">2025-26</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-purple-100">
-                  <div className="flex justify-between text-sm font-medium text-slate-600">
-                    <span>Principal Amount</span>
-                    <span>₹4,200.00</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-medium text-slate-600">
-                    <span>Sewerage Cess</span>
-                    <span>₹150.00</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-black text-[#1e3a8a] pt-4">
-                    <span>Total Outstanding</span>
-                    <span>₹4,350.00</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Secure Transaction Info [cite: 404] */}
-              <div className="flex items-center gap-3 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                <ShieldCheck size={16} className="text-green-500" />
-                PCI-DSS Compliant • Secure Stripe Checkout
-              </div>
-
-              <button 
-                onClick={() => navigate('/service/electricity/success')}
-                className="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-xl shadow-xl flex items-center justify-center gap-3 hover:bg-green-700 transition-all active:scale-95"
-              >
-                {lang === 'en' ? 'PROCEED TO PAY' : 'पेमेंट करण्यासाठी पुढे जा'}
-                <CreditCard size={24} />
-              </button>
-            </motion.div>
-          )}
+        <div className="p-6 border-t border-slate-100 bg-slate-50 space-y-3">
+          <div className="flex items-center gap-2 text-xs text-slate-400 font-bold uppercase">
+            <ShieldCheck size={14} className="text-green-500" /> PCI-DSS Compliant • Secure Stripe Checkout
+          </div>
+          <button onClick={handleProceedToPay} disabled={!propertyId || !amountRupees || parseFloat(amountRupees) <= 0 || submitting}
+            className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
+            {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Processing...' : 'प्रक्रिया जारी...'}</>) : (<><CreditCard size={20} /> {lang === 'en' ? 'Proceed to Pay' : 'भुगतान करें'}</>)}
+          </button>
         </div>
       </div>
     </div>

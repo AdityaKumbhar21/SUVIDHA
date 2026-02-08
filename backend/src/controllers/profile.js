@@ -1,6 +1,7 @@
 // src/controllers/profile.js
 const prisma = require('../lib/prisma');
 const { NotFoundError, ConflictError } = require('../lib/customError');
+const { sendNotification } = require('../services/twilio');
 const {
   profileUpdateSchema,
   addConnectionSchema,
@@ -110,6 +111,12 @@ const addUtilityConnection = [
           createdAt: true,
         },
       });
+
+      sendNotification(
+        userId,
+        `${type} connection linked successfully (Consumer: ${consumerNumber}).`,
+        'connection_added'
+      ).catch(() => {});
 
       return res.status(201).json(connection);
     } catch (err) {

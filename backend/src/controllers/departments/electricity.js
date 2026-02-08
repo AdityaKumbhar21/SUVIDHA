@@ -44,6 +44,7 @@ async function payBill(req, res, next) {
       payment = await prisma.payment.update({
         where: { id: existingPending.id },
         data: {
+          consumerNumber,
           amountPaise: finalAmount,
           stripePaymentIntentId: paymentIntentId,
         },
@@ -52,6 +53,7 @@ async function payBill(req, res, next) {
       payment = await prisma.payment.create({
         data: {
           userId: req.user.id,
+          consumerNumber,
           amountPaise: finalAmount,
           stripePaymentIntentId: paymentIntentId,
           status: 'PENDING',
@@ -225,25 +227,29 @@ async function getPendingBills(req, res, next) {
       select: { consumerNumber: true },
     });
 
-    // Get pending payments for this user
+    const consumerNumbers = connections.map(c => c.consumerNumber);
+    // Get pending payments for this user's electricity connections
     const pendingPayments = await prisma.payment.findMany({
       where: {
         userId,
         status: 'PENDING',
+        consumerNumber: { in: consumerNumbers.length > 0 ? consumerNumbers : ['__none__'] },
       },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         amountPaise: true,
+        consumerNumber: true,
         status: true,
         createdAt: true,
       },
     });
 
     res.json({
-      connections: connections.map(c => c.consumerNumber),
+      connections: consumerNumbers,
       pendingBills: pendingPayments.map(p => ({
         id: p.id,
+        consumerNumber: p.consumerNumber,
         amountPaise: Number(p.amountPaise),
         amountRupees: (Number(p.amountPaise) / 100).toFixed(2),
         status: p.status,

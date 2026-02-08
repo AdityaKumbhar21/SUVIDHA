@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Home, Printer, Download, Copy, CheckCircle2, Sparkles } from 'lucide-react';
@@ -10,10 +10,15 @@ const PaymentSuccess = () => {
   const [copied, setCopied] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
-  // Read confirmed payment data from sessionStorage (set by CardPayment)
-  const paymentResult = JSON.parse(sessionStorage.getItem('paymentResult') || '{}');
-  const billData = JSON.parse(sessionStorage.getItem('billData') || '{}');
-  
+  // Cache sessionStorage data in a ref so it survives React StrictMode double-mount
+  const dataRef = useRef(null);
+  if (!dataRef.current) {
+    const paymentResult = JSON.parse(sessionStorage.getItem('paymentResult') || '{}');
+    const billData = JSON.parse(sessionStorage.getItem('billData') || '{}');
+    dataRef.current = { paymentResult, billData };
+  }
+  const { paymentResult, billData } = dataRef.current;
+
   // Use paymentResult with billData as fallback
   const transactionId = paymentResult.transactionId || billData.paymentIntentId || 'N/A';
   const amountRupees = paymentResult.amountRupees || billData.amountRupees || (billData.amountPaise ? (billData.amountPaise / 100).toFixed(2) : '0.00');
@@ -31,10 +36,9 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), 600);
+    // Clean up sessionStorage only when user navigates away (not on StrictMode remount)
     return () => {
       clearTimeout(timer);
-      sessionStorage.removeItem('billData');
-      sessionStorage.removeItem('paymentResult');
     };
   }, []);
 
@@ -53,7 +57,7 @@ const PaymentSuccess = () => {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center relative z-10 px-4 py-6">
+    <div className="h-full flex flex-col items-center justify-center px-4 py-6">
       
       {/* Confetti-like decorative dots */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -100,10 +104,10 @@ const PaymentSuccess = () => {
         transition={{ delay: 0.3 }}
         className="text-center space-y-1 mb-8"
       >
-        <h1 className="text-3xl font-black text-slate-800">
+        <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">
           {lang === 'en' ? 'Payment Successful!' : 'भुगतान सफल!'}
         </h1>
-        <p className="text-slate-500 font-medium text-sm">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
           {lang === 'en' ? 'Your electricity bill has been paid successfully.' : 'आपका बिजली का बिल सफलतापूर्वक भुगतान हो गया है।'}
         </p>
       </motion.div>
@@ -231,8 +235,8 @@ const PaymentSuccess = () => {
 
           {/* Dashboard Button */}
           <button
-            onClick={() => navigate('/dashboard')}
-            className="w-full py-4 bg-[#1A365D] text-white font-bold rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            onClick={() => { sessionStorage.removeItem('billData'); sessionStorage.removeItem('paymentResult'); navigate('/dashboard'); }}
+            className="w-full py-4 bg-[#1e3a8a] text-white font-bold rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             <Home size={20} />
             {lang === 'en' ? 'Back to Dashboard' : 'डैशबोर्ड पर वापस जाएं'}

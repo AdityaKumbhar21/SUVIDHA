@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Smile, Frown, Meh, Send, CheckCircle2 } from 'lucide-react';
+import { Smile, Frown, Meh, Send, CheckCircle2, Loader2 } from 'lucide-react';
+import { complaintAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 
 const Feedback = () => {
@@ -10,12 +11,21 @@ const Feedback = () => {
   const [sentiment, setSentiment] = useState(null);
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // Logic for AI Feedback Sentiment Analysis [cite: 284]
-    // If sentiment is negative, it flags unresolved dissatisfaction 
-    setSubmitted(true);
-    setTimeout(() => navigate('/dashboard'), 3000);
+  const handleSubmit = async () => {
+    if (!sentiment) return;
+    setSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append('description', `Service Feedback: ${sentiment}. ${comment || 'No additional comments.'}`);
+      await complaintAPI.createComplaint(formData);
+      setSubmitted(true);
+      setTimeout(() => navigate('/dashboard'), 3000);
+    } catch (err) {
+      alert(err.response?.data?.message || (lang === 'en' ? 'Failed to submit feedback.' : 'प्रतिक्रिया सबमिट करने में विफल।'));
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -74,10 +84,10 @@ const Feedback = () => {
 
           <button
             onClick={handleSubmit}
-            disabled={!sentiment}
-            className={`w-full py-4 rounded-xl font-black text-lg shadow-lg flex items-center justify-center gap-2 transition-all ${sentiment ? 'bg-[#1e3a8a] text-white hover:bg-blue-900' : 'bg-slate-100 text-slate-300'}`}
+            disabled={!sentiment || submitting}
+            className={`w-full py-4 rounded-xl font-black text-lg shadow-lg flex items-center justify-center gap-2 transition-all ${sentiment && !submitting ? 'bg-[#1e3a8a] text-white hover:bg-blue-900' : 'bg-slate-100 text-slate-300'}`}
           >
-            {lang === 'en' ? 'SUBMIT FEEDBACK' : 'प्रतिक्रिया सबमिट करें'} <Send size={20} />
+            {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>) : (<>{lang === 'en' ? 'SUBMIT FEEDBACK' : 'प्रतिक्रिया सबमिट करें'} <Send size={20} /></>)}
           </button>
         </div>
       </motion.div>

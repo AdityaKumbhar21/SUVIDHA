@@ -7,6 +7,8 @@ const {
   raiseCylinderIssue,
   requestNewGasConnection,
   getPendingBills,
+  lookupByMobile,
+  bookCylinder,
 } = require('../../controllers/departments/gas');
 
 const router = express.Router();
@@ -37,5 +39,7 @@ router.post(
 
 router.post('/complaints/cylinder', raiseCylinderIssue);
 router.post('/requests/new-connection', requestNewGasConnection);
+router.post('/lookup-mobile', lookupByMobile);
+router.post('/book-cylinder', bookCylinder);
 
 module.exports = router;

@@ -4,16 +4,10 @@ const {
   createPaymentIntentHandler,
   confirmPayment,
   getMyPayments,
-  stripeWebhook,
 } = require('../controllers/payments');
 
 const router = express.Router();
 
-router.post(
-  '/webhook',
-  express.raw({ type: 'application/json' }),
-  stripeWebhook
-);
 
 router.use(authMiddleware);
 router.post('/create-intent', createPaymentIntentHandler);

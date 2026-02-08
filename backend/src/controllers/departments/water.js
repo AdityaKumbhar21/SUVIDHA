@@ -29,11 +29,55 @@ async function payWaterBill(req, res, next) {
     const { clientSecret, paymentIntentId } =
       await createPaymentIntent(finalAmount, {
         userId: req.user.id,
-        connectionId,
+        consumerNumber: connectionId,
         service: 'WATER_BILL',
       });
 
-    res.json({ clientSecret, paymentIntentId });
+    // Check for existing seeded pending payment
+    let payment;
+    const existingPending = await prisma.payment.findFirst({
+      where: {
+        userId: req.user.id,
+        consumerNumber: connectionId,
+        status: 'PENDING',
+        stripePaymentIntentId: null,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existingPending) {
+      payment = await prisma.payment.update({
+        where: { id: existingPending.id },
+        data: {
+          amountPaise: finalAmount,
+          stripePaymentIntentId: paymentIntentId,
+        },
+      });
+    } else {
+      payment = await prisma.payment.create({
+        data: {
+          userId: req.user.id,
+          consumerNumber: connectionId,
+          amountPaise: finalAmount,
+          stripePaymentIntentId: paymentIntentId,
+          status: 'PENDING',
+        },
+      });
+    }
+
+    res.json({
+      clientSecret,
+      paymentIntentId,
+      paymentId: payment.id,
+      amountPaise: Number(finalAmount),
+    });
+
+    // Fire-and-forget notification
+    sendNotification(
+      req.user.id,
+      `Water bill payment initiated for consumer ${connectionId}. Amount: ₹${(finalAmount / 100).toFixed(0)}.`,
+      'payment_initiated'
+    ).catch(() => {});
   } catch (err) {
     next(err);
   }
@@ -172,15 +216,21 @@ async function getPendingBills(req, res, next) {
       where: { userId, type: 'WATER' },
       select: { consumerNumber: true },
     });
+    const consumerNumbers = connections.map(c => c.consumerNumber);
     const pendingPayments = await prisma.payment.findMany({
-      where: { userId, status: 'PENDING' },
+      where: {
+        userId,
+        status: 'PENDING',
+        consumerNumber: { in: consumerNumbers.length > 0 ? consumerNumbers : ['__none__'] },
+      },
       orderBy: { createdAt: 'desc' },
-      select: { id: true, amountPaise: true, status: true, createdAt: true },
+      select: { id: true, amountPaise: true, consumerNumber: true, status: true, createdAt: true },
     });
     res.json({
-      connections: connections.map(c => c.consumerNumber),
+      connections: consumerNumbers,
       pendingBills: pendingPayments.map(p => ({
         id: p.id,
+        consumerNumber: p.consumerNumber,
         amountPaise: Number(p.amountPaise),
         amountRupees: (Number(p.amountPaise) / 100).toFixed(2),
         status: p.status,

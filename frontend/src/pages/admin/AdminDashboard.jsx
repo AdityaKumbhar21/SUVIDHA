@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, AlertCircle, ExternalLink, Loader } from 'lucide-react';
+import { AlertCircle, Loader } from 'lucide-react';
 import { adminAPI } from '../../services/api';
 
 const AdminDashboard = () => {

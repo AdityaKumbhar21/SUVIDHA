@@ -19,19 +19,19 @@ const TrackVan = () => {
   }, []);
 
   return (
-    <div className="h-full flex flex-col relative z-10">
+    <div className="h-full flex flex-col">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-4 px-2">
         <button 
           onClick={() => navigate(-1)}
-          className="p-3 bg-white rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50"
+          className="p-3 bg-white rounded-xl border-2 border-slate-200 text-slate-400 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all active:scale-95"
         >
           <ChevronLeft size={24} />
         </button>
         <div>
-           <h1 className="text-2xl font-black text-slate-800">{lang === 'en' ? 'Live Van Tracking' : 'लाइव वैन ट्रैकिंग'}</h1>
-           <p className="text-slate-500 text-sm">{lang === 'en' ? 'Vehicle: MH-14-GT-9988' : 'वाहन: MH-14-GT-9988'}</p>
+           <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">{lang === 'en' ? 'Live Van Tracking' : 'लाइव वैन ट्रैकिंग'}</h1>
+           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Vehicle: MH-14-GT-9988' : 'वाहन: MH-14-GT-9988'}</p>
         </div>
       </div>
 

@@ -7,7 +7,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 
 const BillSummary = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [error, setError] = useState('');
   const [profile, setProfile] = useState(null);
 
@@ -31,7 +31,6 @@ const BillSummary = () => {
     consumerId: storedBill.consumerId || '—',
     billDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
     dueDate: new Date(Date.now() + 15 * 86400000).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-    units: '145 Units',
     amount: storedBill.amountRupees || '0.00',
     address: profile?.address || 'Loading...',
     cityWard: profile?.cityWard || '',
@@ -46,17 +45,17 @@ const BillSummary = () => {
   };
 
   return (
-    <div className="h-full flex flex-col relative z-10 max-w-2xl mx-auto">
+    <div className="h-full flex flex-col max-w-2xl mx-auto">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <button 
           onClick={() => navigate(-1)}
-          className="p-2 bg-white rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+          className="p-3 bg-white rounded-xl border-2 border-slate-200 text-slate-400 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all active:scale-95"
         >
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-xl font-black text-[#1A365D]">{t('billSummary')}</h1>
+        <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">{t('billSummary')}</h1>
       </div>
 
       {/* THE DIGITAL BILL CARD */}
@@ -68,12 +67,12 @@ const BillSummary = () => {
         {/* Top Strip */}
         <div className="bg-[#1A365D] p-6 text-white flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-bold">MSEDCL Electricity Bill</h2>
-            <p className="text-blue-200 text-xs">State Electricity Distribution Co. Ltd.</p>
+            <h2 className="text-lg font-bold">{lang === 'en' ? 'Electricity Bill' : 'बिजली बिल'}</h2>
+            <p className="text-blue-200 text-xs">{lang === 'en' ? 'Bill Summary' : 'बिल सारांश'}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-medium opacity-70">Bill Month</p>
-            <p className="font-bold">Jan 2026</p>
+            <p className="text-xs font-medium opacity-70">{t('billDate')}</p>
+            <p className="font-bold">{billDetails.billDate}</p>
           </div>
         </div>
 
@@ -106,14 +105,6 @@ const BillSummary = () => {
                 <p className="text-xs text-slate-400 font-bold">{t('dueDate')}</p>
                 <p className="font-semibold text-red-600">{billDetails.dueDate}</p>
              </div>
-             <div>
-                <p className="text-xs text-slate-400 font-bold">{t('unitsConsumed')}</p>
-                <p className="font-semibold text-slate-700">{billDetails.units}</p>
-             </div>
-             <div>
-                <p className="text-xs text-slate-400 font-bold">{t('tariff')}</p>
-                <p className="font-semibold text-slate-700">LT-1 Residential</p>
-             </div>
           </div>
 
           {/* Total Amount */}
@@ -128,7 +119,7 @@ const BillSummary = () => {
         <div className="p-6 bg-slate-50 border-t border-slate-100">
           <button 
             onClick={handleProceedToPay}
-            className="w-full py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-700 text-white font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
           >
             <CreditCard size={20} /> {t('payBillNow')}
           </button>

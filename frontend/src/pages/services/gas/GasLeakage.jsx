@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, MapPin, Camera, Send, ShieldAlert, Loader } from 'lucide-react';
+import { AlertTriangle, MapPin, Send, ShieldAlert, Loader } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { gasAPI } from '../../../services/api';
 
@@ -10,22 +10,9 @@ const GasLeakage = () => {
   const { lang } = useLanguage();
   const [showWarning, setShowWarning] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [location, setLocation] = useState('Connaught Place, New Delhi 110001');
-  const [photoFile, setPhotoFile] = useState(null);
-  const [userPhone, setUserPhone] = useState('');
+  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('Gas leak emergency - immediate attention required');
 
-  useEffect(() => {
-    // Get user phone from localStorage
-    const phone = localStorage.getItem('userPhone') || '';
-    setUserPhone(phone);
-  }, []);
-
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPhotoFile(file);
-    }
-  };
 
   const handleCriticalSubmit = async () => {
     setIsSubmitting(true);
@@ -33,11 +20,8 @@ const GasLeakage = () => {
     try {
       // Create FormData for gas leakage report
       const formData = new FormData();
-      formData.append('description', 'Gas leak emergency - immediate attention required');
+      formData.append('description', description || 'Gas leak emergency - immediate attention required');
       formData.append('location', location);
-      if (photoFile) {
-        formData.append('photo', photoFile);
-      }
 
       // Call the API to report gas leakage
       const response = await gasAPI.reportLeakage(formData);
@@ -99,33 +83,31 @@ const GasLeakage = () => {
         </div>
 
         <div className="p-8 space-y-8">
-          {/* Auto-detect Address  */}
-          <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4">
-            <MapPin className="text-[#1e3a8a]" />
-            <div>
-              <p className="text-[10px] font-black text-blue-400 uppercase">{lang === 'en' ? 'Detected Location' : 'शोधलेले ठिकाण'}</p>
-              <p className="text-sm font-bold text-slate-700">{location}</p>
-            </div>
+          {/* Location Input */}
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
+              <MapPin size={14} className="inline mr-1" />
+              {lang === 'en' ? 'Location' : 'स्थान'}
+            </label>
+            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={isSubmitting}
+              placeholder={lang === 'en' ? 'Enter your address / area' : 'अपना पता / क्षेत्र दर्ज करें'}
+              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
           </div>
 
-          {/* Photo Upload [cite: 163] */}
-          <label className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-red-400 transition-colors group cursor-pointer block disabled:opacity-50">
-            <Camera size={40} className="mx-auto text-slate-300 group-hover:text-red-500 mb-2" />
-            <p className="text-sm font-bold text-slate-500">{photoFile ? 'Photo Selected' : (lang === 'en' ? 'Upload Proof (Optional)' : 'सबूत अपलोड करें (वैकल्पिक)')}</p>
-            <input 
-              type="file" 
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              disabled={isSubmitting}
-              className="hidden"
-            />
-          </label>
+          {/* Description */}
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
+              {lang === 'en' ? 'Details (Optional)' : 'विवरण (वैकल्पिक)'}
+            </label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={isSubmitting}
+              className="w-full h-24 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
+          </div>
 
           <button 
             onClick={handleCriticalSubmit}
             disabled={isSubmitting}
             className={`w-full py-5 rounded-2xl font-black text-xl shadow-2xl flex items-center justify-center gap-3 transition-all disabled:opacity-70 ${
-              isSubmitting ? 'bg-slate-200 text-slate-400' : 'bg-red-600 text-white hover:bg-red-700 hover:-translate-y-1'
+              isSubmitting ? 'bg-slate-200 text-slate-400' : 'bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90 hover:-translate-y-1'
             }`}
           >
             {isSubmitting ? (

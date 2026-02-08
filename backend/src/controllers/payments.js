@@ -6,6 +6,7 @@ const { generateReceipt } = require('../services/receipt');
 
 const createIntentSchema = z.object({
   amountPaise: z.number().int().positive(),
+  consumerNumber: z.string().min(1).max(50),
   complaintId: z.string().uuid().optional(),
   description: z.string().max(100).optional(),
 });
@@ -13,12 +14,13 @@ const createIntentSchema = z.object({
 
 async function createPaymentIntentHandler(req, res, next) {
   try {
-    const { amountPaise, complaintId, description } =
+    const { amountPaise, consumerNumber, complaintId, description } =
       createIntentSchema.parse(req.body);
 
     const { clientSecret, paymentIntentId } =
       await createPaymentIntent(amountPaise, {
         userId: req.user.id,
+        consumerNumber,
         complaintId: complaintId || '',
         description: description || 'SUVIDHA service payment',
       });
@@ -26,6 +28,7 @@ async function createPaymentIntentHandler(req, res, next) {
     await prisma.payment.create({
       data: {
         userId: req.user.id,
+        consumerNumber,
         complaintId: complaintId || null,
         amountPaise,
         stripePaymentIntentId: paymentIntentId,

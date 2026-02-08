@@ -1,121 +1,67 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Receipt, PlusCircle, AlertTriangle, 
-  ZapOff, Settings2, ChevronLeft, ArrowRight 
-} from 'lucide-react';
+import { Receipt, PlusCircle, AlertTriangle, ZapOff, Settings2, ChevronLeft, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const Electricity = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
-  const electricityServices = [
-    {
-      id: 'pay-bill',
-      name: t('billPayment'),
-      sub: t('billPaymentSub'),
-      icon: <Receipt size={32} />,
-      gradient: 'from-amber-400 to-orange-600',
-      path: '/service/electricity/pay'
-    },
-    {
-      id: 'outage',
-      name: t('powerOutage'),
-      sub: t('powerOutageSub'),
-      icon: <ZapOff size={32} />,
-      gradient: 'from-red-500 to-rose-700',
-      path: '/service/electricity/outage'
-    },
-    {
-      id: 'new-conn',
-      name: t('newConnection'),
-      sub: t('newConnectionSub'),
-      icon: <PlusCircle size={32} />,
-      gradient: 'from-blue-500 to-indigo-700',
-      path: '/service/electricity/new'
-    },
-    {
-      id: 'meter-issue',
-      name: t('meterIssue'),
-      sub: t('meterIssueSub'),
-      icon: <AlertTriangle size={32} />,
-      gradient: 'from-orange-500 to-red-600',
-      path: '/service/electricity/meter'
-    },
-    {
-      id: 'load-change',
-      name: t('loadChange'),
-      sub: t('loadChangeSub'),
-      icon: <Settings2 size={32} />,
-      gradient: 'from-slate-600 to-slate-800',
-      path: '/service/electricity/load'
-    }
+  const services = [
+    { id: 'pay-bill', name: t('billPayment'), sub: t('billPaymentSub'), icon: <Receipt size={28} />, path: '/service/electricity/pay' },
+    { id: 'outage', name: t('powerOutage'), sub: t('powerOutageSub'), icon: <ZapOff size={28} />, path: '/service/electricity/outage' },
+    { id: 'new-conn', name: t('newConnection'), sub: t('newConnectionSub'), icon: <PlusCircle size={28} />, path: '/service/electricity/new' },
+    { id: 'meter-issue', name: t('meterIssue'), sub: t('meterIssueSub'), icon: <AlertTriangle size={28} />, path: '/service/electricity/meter' },
+    { id: 'load-change', name: t('loadChange'), sub: t('loadChangeSub'), icon: <Settings2 size={28} />, path: '/service/electricity/load' },
   ];
 
   return (
-    <div className="h-full flex flex-col relative z-10">
+    <div className="h-full flex flex-col">
       
-      {/* Navigation & Header */}
-      <div className="mb-10 flex items-center gap-6">
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className="p-3 bg-white rounded-2xl shadow-sm border border-slate-200 text-slate-400 hover:text-[#1A365D] hover:border-[#1A365D] transition-all active:scale-90"
-        >
-          <ChevronLeft size={24} />
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <button onClick={() => navigate('/dashboard')} className="p-3 bg-white rounded-xl border-2 border-slate-200 text-slate-400 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all active:scale-95">
+          <ChevronLeft size={22} />
         </button>
         <div>
-          <h1 className="text-3xl font-black text-[#1A365D] tracking-tight uppercase">{t('electricityServices')}</h1>
-          <p className="text-slate-500 font-medium">{t('deptOfPower')}</p>
+          <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">{t('electricityServices')}</h1>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('deptOfPower')}</p>
         </div>
       </div>
 
-      {/* Service List (Horizontal/Vertical Mix) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
-        {electricityServices.map((service, idx) => (
+      {/* Service List */}
+      <div className="space-y-3 flex-1">
+        {services.map((service, idx) => (
           <motion.button
             key={service.id}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.1 }}
+            transition={{ delay: idx * 0.05 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate(service.path)}
-            className="group flex items-center gap-6 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all text-left"
+            className="w-full flex items-center gap-4 bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-[#1e3a8a] hover:shadow-md transition-all text-left active:bg-slate-50"
           >
-            {/* Service Icon */}
-            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+            <div className="w-14 h-14 rounded-xl bg-[#1e3a8a] flex items-center justify-center text-white shrink-0">
               {service.icon}
             </div>
-
-            {/* Service Text */}
-            <div className="flex-1">
-              <h3 className="text-xl font-black text-slate-800 group-hover:text-blue-700 transition-colors">
-                {service.name}
-              </h3>
-              <p className="text-slate-500 font-medium text-sm mt-0.5">
-                {service.sub}
-              </p>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-black text-slate-800 truncate">{service.name}</h3>
+              <p className="text-xs font-medium text-slate-400 truncate">{service.sub}</p>
             </div>
-
-            {/* Action Arrow */}
-            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all">
-              <ArrowRight size={20} />
-            </div>
+            <ArrowRight size={18} className="text-slate-300 shrink-0" />
           </motion.button>
         ))}
       </div>
 
-      {/* Quick Info Box */}
-      <div className="mt-auto bg-blue-50/50 border border-blue-100 p-6 rounded-3xl flex items-center gap-4">
-        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-          <AlertTriangle size={24} />
-        </div>
+      {/* Emergency Info */}
+      <div className="mt-4 bg-red-50 border-2 border-red-200 p-4 rounded-2xl flex items-center gap-3">
+        <AlertTriangle size={20} className="text-red-500 shrink-0" />
         <div>
-          <h4 className="font-bold text-blue-900 text-sm">{t('emergencyHelpline')}</h4>
-          <p className="text-blue-700 text-xs font-medium">{t('emergencyHelplineDesc')}</p>
+          <p className="text-xs font-black text-red-700 uppercase">{t('emergencyHelpline')}</p>
+          <p className="text-[10px] font-bold text-red-500">{t('emergencyHelplineDesc')}</p>
         </div>
       </div>
-
     </div>
   );
 };

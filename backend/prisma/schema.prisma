@@ -64,6 +64,7 @@ enum PaymentStatus {
   SUCCESS
   FAILED
   REFUNDED
+  PAY_ON_DELIVERY
 }
 
 // Models
@@ -85,6 +86,7 @@ model User {
   notifications      Notification[]
   feedbackGiven      Feedback[]   @relation("UserFeedback")
   auditLogs          AuditLog[]
+  cylinderBookings   CylinderBooking[]
 
   @@map("users")
 }
@@ -133,6 +135,7 @@ model Payment {
   id                    String         @id @default(uuid()) @db.VarChar(36)
   userId                String         @db.VarChar(36)
   complaintId           String?        @unique @db.VarChar(36)
+  consumerNumber        String         @db.VarChar(50)
   amountPaise           BigInt
   stripePaymentIntentId String?        @unique @map("stripe_payment_intent_id")
   status                PaymentStatus  @default(PENDING)
@@ -143,8 +146,10 @@ model Payment {
   user                  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   complaint             Complaint?     @relation(fields: [complaintId], references: [id], onDelete: SetNull)
 
+  @@index([consumerNumber])
   @@map("payments")
 }
+
 
 
 
@@ -202,4 +207,25 @@ model AuditLog {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("audit_logs")
+}
+
+
+model CylinderBooking {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  userId          String   @db.VarChar(36)
+  consumerNumber  String   @db.VarChar(50)
+  provider        String   @db.VarChar(20)
+  deliveryAddress String   @db.Text
+  cylinderType    String   @default("14.2kg") @db.VarChar(20)
+  amountPaise     BigInt   @default(90300)
+  paymentMode     String   @default("PAY_ON_DELIVERY") @db.VarChar(20)
+  status          String   @default("BOOKED") @db.VarChar(20)
+
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([consumerNumber])
+  @@map("cylinder_bookings")
 }
