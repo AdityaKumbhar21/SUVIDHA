@@ -4,6 +4,29 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, Send, Loader2, CheckCircle } from 'lucide-react';
 import { gasAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const CYLINDER_ISSUES = [
+  { value: 'Cylinder is making hissing sound from valve', label: 'Hissing sound from valve' },
+  { value: 'Regulator is defective or leaking', label: 'Regulator defective / leaking' },
+  { value: 'Wrong weight delivered - cylinder feels light', label: 'Wrong weight - cylinder feels light' },
+  { value: 'Cylinder body is rusted or damaged', label: 'Cylinder body rusted / damaged' },
+  { value: 'Gas flame is yellow or weak', label: 'Gas flame is yellow / weak' },
+  { value: 'Cylinder valve is stuck or hard to open', label: 'Valve is stuck / hard to open' },
+  { value: 'Delivered cylinder is dented or deformed', label: 'Cylinder is dented / deformed' },
+  { value: 'Other cylinder issue', label: 'Other cylinder issue' },
+];
+
+const CYLINDER_ISSUES_HI = [
+  { value: 'Cylinder is making hissing sound from valve', label: 'वाल्व से सीटी की आवाज़' },
+  { value: 'Regulator is defective or leaking', label: 'रेगुलेटर खराब / लीक हो रहा है' },
+  { value: 'Wrong weight delivered - cylinder feels light', label: 'गलत वजन - सिलेंडर हल्का लगता है' },
+  { value: 'Cylinder body is rusted or damaged', label: 'सिलेंडर में जंग / क्षति' },
+  { value: 'Gas flame is yellow or weak', label: 'गैस की लौ पीली / कमज़ोर' },
+  { value: 'Cylinder valve is stuck or hard to open', label: 'वाल्व अटका / खोलने में मुश्किल' },
+  { value: 'Delivered cylinder is dented or deformed', label: 'सिलेंडर पिचका / विकृत' },
+  { value: 'Other cylinder issue', label: 'अन्य सिलेंडर समस्या' },
+];
 
 const CylinderIssue = () => {
   const navigate = useNavigate();
@@ -76,26 +99,21 @@ const CylinderIssue = () => {
             />
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Cylinder is making hissing sound, regulator is defective, wrong weight delivered...' : 'जैसे सिलेंडर से सीटी की आवाज़ आ रही है, रेगुलेटर खराब है...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            />
-            <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters' : 'कम से कम 10 अक्षर'}</p>
-          </div>
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? CYLINDER_ISSUES : CYLINDER_ISSUES_HI}
+            placeholder={lang === 'en' ? '-- Select Issue Type --' : '-- समस्या का प्रकार चुनें --'}
+            label={lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
+            disabled={submitting}
+          />
 
         </div>
 
         <div className="p-6 border-t border-slate-100 bg-slate-50">
           <button
             onClick={handleSubmit}
-            disabled={!description || description.length < 10 || submitting}
+            disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

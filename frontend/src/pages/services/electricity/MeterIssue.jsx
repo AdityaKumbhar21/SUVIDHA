@@ -4,6 +4,29 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, Send, Loader2, CheckCircle, Gauge } from 'lucide-react';
 import { electricityAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const METER_ISSUES = [
+  { value: 'Meter display is blank or not working', label: 'Meter display is blank / not working' },
+  { value: 'Meter is running too fast', label: 'Meter is running too fast' },
+  { value: 'Meter is sparking or making noise', label: 'Meter is sparking / making noise' },
+  { value: 'Meter reading does not match consumption', label: 'Reading does not match consumption' },
+  { value: 'Meter glass is broken or damaged', label: 'Meter glass is broken / damaged' },
+  { value: 'Meter seal is broken or tampered', label: 'Meter seal is broken / tampered' },
+  { value: 'Meter stopped recording units', label: 'Meter stopped recording units' },
+  { value: 'Other meter issue', label: 'Other meter issue' },
+];
+
+const METER_ISSUES_HI = [
+  { value: 'Meter display is blank or not working', label: 'मीटर डिस्प्ले खाली / काम नहीं कर रहा' },
+  { value: 'Meter is running too fast', label: 'मीटर बहुत तेज़ चल रहा है' },
+  { value: 'Meter is sparking or making noise', label: 'मीटर में चिंगारी / आवाज़ आ रही है' },
+  { value: 'Meter reading does not match consumption', label: 'रीडिंग उपभोग से मेल नहीं खाती' },
+  { value: 'Meter glass is broken or damaged', label: 'मीटर का काँच टूटा / क्षतिग्रस्त' },
+  { value: 'Meter seal is broken or tampered', label: 'मीटर की सील टूटी / छेड़छाड़' },
+  { value: 'Meter stopped recording units', label: 'मीटर ने यूनिट रिकॉर्ड करना बंद कर दिया' },
+  { value: 'Other meter issue', label: 'अन्य मीटर समस्या' },
+];
 
 const MeterIssue = () => {
   const navigate = useNavigate();
@@ -77,26 +100,21 @@ const MeterIssue = () => {
             />
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Meter reading is too fast, display is blank, sparking...' : 'जैसे मीटर बहुत तेज़ चल रहा है, डिस्प्ले खाली है...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            />
-            <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters' : 'कम से कम 10 अक्षर'}</p>
-          </div>
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? METER_ISSUES : METER_ISSUES_HI}
+            placeholder={lang === 'en' ? '-- Select Issue Type --' : '-- समस्या का प्रकार चुनें --'}
+            label={lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
+            disabled={submitting}
+          />
 
         </div>
 
         <div className="p-6 border-t border-slate-100 bg-slate-50">
           <button
             onClick={handleSubmit}
-            disabled={!description || description.length < 10 || submitting}
+            disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

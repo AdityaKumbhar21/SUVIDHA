@@ -1,9 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, MapPin, Send, ShieldAlert, Loader } from 'lucide-react';
+import { AlertTriangle, Send, ShieldAlert, Loader } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { gasAPI } from '../../../services/api';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const GAS_LEAK_REASONS = [
+  { value: 'Gas leak emergency - strong smell of gas inside house', label: 'Strong smell of gas inside house' },
+  { value: 'Gas leak emergency - hissing sound from pipeline', label: 'Hissing sound from pipeline' },
+  { value: 'Gas leak emergency - gas smell near meter or regulator', label: 'Gas smell near meter / regulator' },
+  { value: 'Gas leak emergency - gas pipeline damaged', label: 'Gas pipeline damaged' },
+  { value: 'Gas leak emergency - smell of gas outdoors in locality', label: 'Smell of gas outdoors in locality' },
+  { value: 'Gas leak emergency - immediate attention required', label: 'Other gas leak emergency' },
+];
+
+const GAS_LEAK_REASONS_HI = [
+  { value: 'Gas leak emergency - strong smell of gas inside house', label: 'घर के अंदर गैस की तेज़ गंध' },
+  { value: 'Gas leak emergency - hissing sound from pipeline', label: 'पाइपलाइन से सीटी की आवाज़' },
+  { value: 'Gas leak emergency - gas smell near meter or regulator', label: 'मीटर / रेगुलेटर के पास गैस की गंध' },
+  { value: 'Gas leak emergency - gas pipeline damaged', label: 'गैस पाइपलाइन क्षतिग्रस्त' },
+  { value: 'Gas leak emergency - smell of gas outdoors in locality', label: 'बाहर इलाके में गैस की गंध' },
+  { value: 'Gas leak emergency - immediate attention required', label: 'अन्य गैस रिसाव आपातकाल' },
+];
 
 const GasLeakage = () => {
   const navigate = useNavigate();
@@ -84,24 +104,23 @@ const GasLeakage = () => {
 
         <div className="p-8 space-y-8">
           {/* Location Input */}
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Location' : 'स्थान'}
-            </label>
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={isSubmitting}
-              placeholder={lang === 'en' ? 'Enter your address / area' : 'अपना पता / क्षेत्र दर्ज करें'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
-          </div>
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={isSubmitting}
+            lang={lang}
+            label={lang === 'en' ? 'Location' : 'स्थान'}
+          />
 
           {/* Description */}
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Details (Optional)' : 'विवरण (वैकल्पिक)'}
-            </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={isSubmitting}
-              className="w-full h-24 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
-          </div>
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? GAS_LEAK_REASONS : GAS_LEAK_REASONS_HI}
+            placeholder={lang === 'en' ? '-- Select Issue Type --' : '-- समस्या का प्रकार चुनें --'}
+            label={lang === 'en' ? 'Details (Optional)' : 'विवरण (वैकल्पिक)'}
+            disabled={isSubmitting}
+          />
 
           <button 
             onClick={handleCriticalSubmit}

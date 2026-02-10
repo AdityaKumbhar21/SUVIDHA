@@ -1,9 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, MapPin, Send, Loader2, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle, Trash2 } from 'lucide-react';
 import { wasteAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const OVERFLOW_REASONS = [
+  { value: 'Large garbage bin near park overflowing for 2+ days', label: 'Bin overflowing for 2+ days' },
+  { value: 'Community dustbin is full and garbage spilling on road', label: 'Dustbin full, garbage on road' },
+  { value: 'Garbage bin not emptied, causing foul smell in area', label: 'Not emptied, causing foul smell' },
+  { value: 'Bin is damaged/broken and waste is scattering around', label: 'Bin damaged, waste scattering' },
+  { value: 'Street animals tearing garbage bags from overflowing bin', label: 'Animals tearing garbage bags' },
+  { value: 'Construction waste dumped near community bin', label: 'Construction waste near bin' },
+  { value: 'Bin too small for the area, always overflowing', label: 'Bin too small for area' },
+];
+
+const OVERFLOW_REASONS_HI = [
+  { value: 'पार्क के पास बड़ा कचरा पात्र 2+ दिनों से ओवरफ्लो', label: '2+ दिनों से ओवरफ्लो' },
+  { value: 'सामुदायिक कचरा पात्र भरा है और सड़क पर फैल रहा है', label: 'कचरा पात्र भरा, सड़क पर कचरा' },
+  { value: 'कचरा पात्र खाली नहीं किया गया, बदबू आ रही है', label: 'खाली नहीं, बदबू आ रही' },
+  { value: 'कचरा पात्र क्षतिग्रस्त/टूटा है और कचरा फैल रहा है', label: 'पात्र टूटा, कचरा फैल रहा' },
+  { value: 'आवारा जानवर ओवरफ्लो बिन से कचरे के थैले फाड़ रहे हैं', label: 'जानवर थैले फाड़ रहे' },
+  { value: 'सामुदायिक कचरा पात्र के पास निर्माण कचरा डंप किया गया', label: 'निर्माण कचरा डंप' },
+  { value: 'क्षेत्र के लिए कचरा पात्र बहुत छोटा है, हमेशा ओवरफ्लो', label: 'पात्र छोटा, हमेशा ओवरफ्लो' },
+];
 
 const OverflowingBin = () => {
   const navigate = useNavigate();
@@ -14,7 +36,7 @@ const OverflowingBin = () => {
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async () => {
-    if (!description || description.length < 5) return;
+    if (!description) return;
     setSubmitting(true);
     try {
       const formData = new FormData();
@@ -60,26 +82,25 @@ const OverflowingBin = () => {
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Bin Location' : 'कचरा पात्र स्थान'}
-            </label>
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'Street, area, nearest landmark' : 'सड़क, क्षेत्र, निकटतम लैंडमार्क'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Details' : 'विवरण'}
-            </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Large bin near park overflowing since 2 days, causing odor...' : 'जैसे पार्क के पास बड़ा कचरा पात्र 2 दिनों से ओवरफ्लो...'}
-              className="w-full h-28 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
-          </div>
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Bin Location' : 'कचरा पात्र स्थान'}
+          />
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? OVERFLOW_REASONS : OVERFLOW_REASONS_HI}
+            placeholder={lang === 'en' ? 'Select issue...' : 'समस्या चुनें...'}
+            label={lang === 'en' ? 'Overflow Details' : 'ओवरफ्लो विवरण'}
+            disabled={submitting}
+            icon={Trash2}
+          />
         </div>
         <div className="p-6 border-t border-slate-100 bg-slate-50">
-          <button onClick={handleSubmit} disabled={!description || description.length < 5 || submitting}
+          <button onClick={handleSubmit} disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
             {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>) : (<><Send size={20} /> {lang === 'en' ? 'Submit Complaint' : 'शिकायत दर्ज करें'}</>)}
           </button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, MapPin, Save, Loader } from 'lucide-react';
@@ -11,11 +11,45 @@ const ProfileCreation = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     address: '',
-    city: 'Pune', // Defaulting to your local context
+    city: 'Pune',
     ward: ''
   });
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [error, setError] = useState('');
+
+  // Fetch existing profile data on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await profileAPI.getProfile();
+        if (response.data) {
+          const { name, address, cityWard } = response.data;
+          let city = 'Pune';
+          let ward = '';
+          if (cityWard && cityWard.includes(' - ')) {
+            const parts = cityWard.split(' - ');
+            city = parts[0] || 'Pune';
+            ward = parts[1] || '';
+          } else if (cityWard) {
+            city = cityWard;
+          }
+          setFormData({
+            fullName: name || '',
+            address: address || '',
+            city,
+            ward,
+          });
+        }
+      } catch (err) {
+        // Profile not found or auth issue — user fills fresh
+        console.log('No existing profile to pre-fill');
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

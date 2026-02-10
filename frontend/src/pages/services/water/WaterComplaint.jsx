@@ -1,9 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, MapPin, Send, CheckCircle, Loader2 } from 'lucide-react';
+import { ChevronLeft, Send, CheckCircle, Loader2 } from 'lucide-react';
 import { waterAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const WATER_SUPPLY_ISSUES = [
+  { value: 'No water supply since morning in the entire area', label: 'No water supply since morning' },
+  { value: 'Very low water pressure, barely trickling', label: 'Very low water pressure' },
+  { value: 'Water comes only for a few minutes then stops', label: 'Water comes briefly then stops' },
+  { value: 'No water supply for more than 24 hours', label: 'No supply for 24+ hours' },
+  { value: 'Water supply timing has changed without notice', label: 'Supply timing changed without notice' },
+  { value: 'Tanker water not received on scheduled day', label: 'Tanker water not received' },
+  { value: 'Other water supply issue', label: 'Other water supply issue' },
+];
+
+const WATER_SUPPLY_ISSUES_HI = [
+  { value: 'No water supply since morning in the entire area', label: 'सुबह से पूरे क्षेत्र में पानी नहीं' },
+  { value: 'Very low water pressure, barely trickling', label: 'बहुत कम पानी का दबाव' },
+  { value: 'Water comes only for a few minutes then stops', label: 'पानी कुछ मिनट आता है फिर बंद' },
+  { value: 'No water supply for more than 24 hours', label: '24 घंटे+ से पानी नहीं' },
+  { value: 'Water supply timing has changed without notice', label: 'बिना सूचना समय बदल गया' },
+  { value: 'Tanker water not received on scheduled day', label: 'टैंकर का पानी नहीं मिला' },
+  { value: 'Other water supply issue', label: 'अन्य पानी आपूर्ति समस्या' },
+];
 
 const WaterComplaint = () => {
   const navigate = useNavigate();
@@ -60,27 +82,24 @@ const WaterComplaint = () => {
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Location' : 'स्थान'}
-            </label>
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'Area, ward, street name' : 'क्षेत्र, वार्ड, सड़क का नाम'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
-            </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. No water supply since morning, the whole lane is affected...' : 'जैसे सुबह से पानी नहीं आ रहा, पूरी गली प्रभावित है...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
-            <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters' : 'कम से कम 10 अक्षर'}</p>
-          </div>
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Location' : 'स्थान'}
+          />
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? WATER_SUPPLY_ISSUES : WATER_SUPPLY_ISSUES_HI}
+            placeholder={lang === 'en' ? '-- Select Issue Type --' : '-- समस्या का प्रकार चुनें --'}
+            label={lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
+            disabled={submitting}
+          />
         </div>
         <div className="p-6 border-t border-slate-100 bg-slate-50">
-          <button onClick={handleSubmit} disabled={!description || description.length < 10 || submitting}
+          <button onClick={handleSubmit} disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
             {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>) : (<><Send size={20} /> {lang === 'en' ? 'Submit Complaint' : 'शिकायत दर्ज करें'}</>)}
           </button>

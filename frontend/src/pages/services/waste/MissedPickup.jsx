@@ -1,9 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, MapPin, Send, Loader2, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle, Trash2 } from 'lucide-react';
 import { wasteAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const MISSED_PICKUP_REASONS = [
+  { value: 'Garbage van did not come today', label: 'Garbage van did not come today' },
+  { value: 'Garbage van skipped our street / lane', label: 'Van skipped our street/lane' },
+  { value: 'Waste collector did not pick up segregated waste', label: 'Segregated waste not picked up' },
+  { value: 'No pickup for the last 2-3 days', label: 'No pickup for 2-3 days' },
+  { value: 'Only dry waste collected, wet waste left behind', label: 'Only dry waste collected' },
+  { value: 'Garbage van came but did not stop at our area', label: 'Van came but did not stop' },
+  { value: 'Holiday schedule not followed, no pickup today', label: 'Holiday schedule not followed' },
+];
+
+const MISSED_PICKUP_REASONS_HI = [
+  { value: 'कचरा वाहन आज नहीं आया', label: 'कचरा वाहन आज नहीं आया' },
+  { value: 'कचरा वाहन ने हमारी गली छोड़ दी', label: 'हमारी गली छोड़ दी' },
+  { value: 'अलग किया गया कचरा नहीं उठाया गया', label: 'अलग कचरा नहीं उठाया' },
+  { value: 'पिछले 2-3 दिनों से कोई पिकअप नहीं', label: '2-3 दिनों से पिकअप नहीं' },
+  { value: 'सिर्फ सूखा कचरा उठाया, गीला छोड़ दिया', label: 'सिर्फ सूखा कचरा उठाया' },
+  { value: 'वाहन आया लेकिन हमारे क्षेत्र में नहीं रुका', label: 'वाहन आया पर रुका नहीं' },
+  { value: 'छुट्टी का शेड्यूल फॉलो नहीं किया गया', label: 'छुट्टी शेड्यूल फॉलो नहीं' },
+];
 
 const MissedPickup = () => {
   const navigate = useNavigate();
@@ -14,7 +36,7 @@ const MissedPickup = () => {
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async () => {
-    if (!description || description.length < 5) return;
+    if (!description) return;
 
     setSubmitting(true);
     try {
@@ -62,26 +84,25 @@ const MissedPickup = () => {
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Location / Address' : 'स्थान / पता'}
-            </label>
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'Your street, area, ward' : 'आपकी सड़क, क्षेत्र, वार्ड'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Details' : 'विवरण'}
-            </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Garbage van did not come today, waste piling up...' : 'जैसे कचरा वाहन आज नहीं आया...'}
-              className="w-full h-28 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
-          </div>
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Location / Address' : 'स्थान / पता'}
+          />
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? MISSED_PICKUP_REASONS : MISSED_PICKUP_REASONS_HI}
+            placeholder={lang === 'en' ? 'Select reason...' : 'कारण चुनें...'}
+            label={lang === 'en' ? 'Reason for Complaint' : 'शिकायत का कारण'}
+            disabled={submitting}
+            icon={Trash2}
+          />
         </div>
         <div className="p-6 border-t border-slate-100 bg-slate-50">
-          <button onClick={handleSubmit} disabled={!description || description.length < 5 || submitting}
+          <button onClick={handleSubmit} disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
             {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>) : (<><Send size={20} /> {lang === 'en' ? 'Submit Complaint' : 'शिकायत दर्ज करें'}</>)}
           </button>

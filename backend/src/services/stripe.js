@@ -28,7 +28,7 @@ async function createPaymentIntent(amountPaise, metadata = {}) {
       {
         amount: amountPaise,
         currency: 'inr',
-        automatic_payment_methods: { enabled: true },
+        automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
         metadata: sanitizeMetadata(metadata),
       },
       {
@@ -65,7 +65,25 @@ function constructWebhookEvent(rawBody, signature) {
   }
 }
 
+/**
+ * Confirm a PaymentIntent using a test payment method.
+ * In production, the frontend Stripe.js would handle this with the real card.
+ * For kiosk/demo mode, we use a Stripe test payment method (pm_card_visa).
+ */
+async function confirmStripePayment(paymentIntentId) {
+  try {
+    const intent = await stripe.paymentIntents.confirm(paymentIntentId, {
+      payment_method: 'pm_card_visa', // Stripe test card — always succeeds
+    });
+    return intent;
+  } catch (err) {
+    console.error('Stripe confirm error:', err.message);
+    throw err;
+  }
+}
+
 module.exports = {
   createPaymentIntent,
   constructWebhookEvent,
+  confirmStripePayment,
 };

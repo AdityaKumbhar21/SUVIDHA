@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, MapPin, Send, Loader2, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle } from 'lucide-react';
 import { gasAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
 
 const GasNewConnection = () => {
   const navigate = useNavigate();
@@ -17,10 +18,7 @@ const GasNewConnection = () => {
 
     setSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append('address', address);
-
-      const response = await gasAPI.requestNewConnection(formData);
+      const response = await gasAPI.requestNewConnection({ address });
       setSuccess(response.data.complaintId);
       setTimeout(() => navigate('/dashboard'), 3000);
     } catch (err) {
@@ -61,20 +59,13 @@ const GasNewConnection = () => {
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Delivery Address' : 'डिलीवरी पता'}
-            </label>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'Enter your complete address with landmark (min 10 chars)...' : 'पूरा पता लैंडमार्क के साथ दर्ज करें...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            />
-            <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters required' : 'कम से कम 10 अक्षर आवश्यक'}</p>
-          </div>
+          <LocationPicker
+            value={address}
+            onChange={setAddress}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Delivery Address' : 'डिलीवरी पता'}
+          />
 
           <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
             <p className="text-xs font-bold text-orange-800 uppercase tracking-wider mb-1">{lang === 'en' ? 'Processing Time' : 'प्रक्रिया समय'}</p>
@@ -86,7 +77,7 @@ const GasNewConnection = () => {
         <div className="p-6 border-t border-slate-100 bg-slate-50">
           <button
             onClick={handleSubmit}
-            disabled={!address || address.length < 10 || submitting}
+            disabled={!address || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

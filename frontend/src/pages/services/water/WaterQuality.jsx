@@ -1,9 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Send, Loader2, CheckCircle, MapPin } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle, Droplets } from 'lucide-react';
 import { waterAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const WATER_QUALITY_ISSUES = [
+  { value: 'Water is yellow or brown in color', label: 'Yellow/brown colored water' },
+  { value: 'Water has bad smell or foul odor', label: 'Bad smell or foul odor' },
+  { value: 'Water contains sand, mud or particles', label: 'Contains sand/mud/particles' },
+  { value: 'Water appears milky or cloudy', label: 'Milky or cloudy water' },
+  { value: 'Water has oily layer on top', label: 'Oily layer on water surface' },
+  { value: 'Water tastes metallic or chemical', label: 'Metallic or chemical taste' },
+  { value: 'Insects or worms found in water', label: 'Insects or worms in water' },
+  { value: 'Water has excessive chlorine smell', label: 'Excessive chlorine smell' },
+];
+
+const WATER_QUALITY_ISSUES_HI = [
+  { value: 'पानी पीले या भूरे रंग का है', label: 'पीला/भूरा पानी' },
+  { value: 'पानी में बदबू या दुर्गंध आ रही है', label: 'बदबू या दुर्गंध' },
+  { value: 'पानी में रेत, मिट्टी या कण हैं', label: 'रेत/मिट्टी/कण हैं' },
+  { value: 'पानी दूधिया या धुंधला दिख रहा है', label: 'दूधिया या धुंधला पानी' },
+  { value: 'पानी की सतह पर तेल की परत है', label: 'पानी पर तेल की परत' },
+  { value: 'पानी का स्वाद धातु या रासायनिक है', label: 'धातु या रासायनिक स्वाद' },
+  { value: 'पानी में कीड़े या कीट पाए गए', label: 'पानी में कीड़े/कीट' },
+  { value: 'पानी में अत्यधिक क्लोरीन की गंध', label: 'अत्यधिक क्लोरीन गंध' },
+];
 
 const WaterQuality = () => {
   const navigate = useNavigate();
@@ -14,7 +38,7 @@ const WaterQuality = () => {
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async () => {
-    if (!description || description.length < 10) return;
+    if (!description) return;
 
     setSubmitting(true);
     try {
@@ -62,41 +86,30 @@ const WaterQuality = () => {
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Your Location / Area' : 'आपका स्थान / क्षेत्र'}
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'Area, street, ward number' : 'क्षेत्र, सड़क, वार्ड नंबर'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50"
-            />
-          </div>
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Your Location / Area' : 'आपका स्थान / क्षेत्र'}
+          />
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Problem' : 'समस्या का वर्णन करें'}
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Water is yellow/brown in color, has bad smell, contains particles...' : 'जैसे पानी पीले/भूरे रंग का है, बदबू आ रही है...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            />
-            <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters' : 'कम से कम 10 अक्षर'}</p>
-          </div>
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? WATER_QUALITY_ISSUES : WATER_QUALITY_ISSUES_HI}
+            placeholder={lang === 'en' ? 'Select water quality issue...' : 'पानी की गुणवत्ता समस्या चुनें...'}
+            label={lang === 'en' ? 'Water Quality Problem' : 'पानी गुणवत्ता समस्या'}
+            disabled={submitting}
+            icon={Droplets}
+          />
 
         </div>
 
         <div className="p-6 border-t border-slate-100 bg-slate-50">
           <button
             onClick={handleSubmit}
-            disabled={!description || description.length < 10 || submitting}
+            disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

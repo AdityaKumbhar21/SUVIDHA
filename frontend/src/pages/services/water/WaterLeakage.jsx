@@ -1,9 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Send, Loader2, CheckCircle, MapPin } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle, Droplets } from 'lucide-react';
 import { waterAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const LEAKAGE_REASONS = [
+  { value: 'Pipe burst on main road causing water flow on street', label: 'Pipe burst on main road' },
+  { value: 'Underground pipe leaking near my house', label: 'Underground pipe leaking' },
+  { value: 'Water overflowing from manhole cover', label: 'Water overflowing from manhole' },
+  { value: 'Leaking water valve or junction point', label: 'Leaking valve or junction' },
+  { value: 'Street flooding due to broken pipeline', label: 'Street flooding - broken pipeline' },
+  { value: 'Water meter connection leaking continuously', label: 'Water meter connection leaking' },
+  { value: 'Sewage water mixing with drinking water supply', label: 'Sewage mixing with drinking water' },
+  { value: 'Continuous water dripping from overhead tank pipe', label: 'Dripping from overhead tank pipe' },
+];
+
+const LEAKAGE_REASONS_HI = [
+  { value: 'मुख्य सड़क पर पाइप फटा, सड़क पर पानी बह रहा है', label: 'मुख्य सड़क पर पाइप फटा' },
+  { value: 'मेरे घर के पास भूमिगत पाइप से रिसाव', label: 'भूमिगत पाइप से रिसाव' },
+  { value: 'मैनहोल कवर से पानी बह रहा है', label: 'मैनहोल से पानी बहना' },
+  { value: 'पानी का वाल्व या जंक्शन प्वाइंट से रिसाव', label: 'वाल्व या जंक्शन से रिसाव' },
+  { value: 'टूटी पाइपलाइन के कारण सड़क पर बाढ़', label: 'टूटी पाइपलाइन - सड़क पर बाढ़' },
+  { value: 'पानी मीटर कनेक्शन से लगातार रिसाव', label: 'पानी मीटर कनेक्शन से रिसाव' },
+  { value: 'सीवेज पानी पीने के पानी में मिल रहा है', label: 'सीवेज पीने के पानी में मिलना' },
+  { value: 'ओवरहेड टैंक पाइप से लगातार पानी टपकना', label: 'ओवरहेड टैंक से पानी टपकना' },
+];
 
 const WaterLeakage = () => {
   const navigate = useNavigate();
@@ -14,7 +38,7 @@ const WaterLeakage = () => {
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async () => {
-    if (!description || description.length < 10) return;
+    if (!description) return;
 
     setSubmitting(true);
     try {
@@ -62,41 +86,30 @@ const WaterLeakage = () => {
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Location' : 'स्थान'}
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'Where is the leakage? (Street, area, landmark)' : 'रिसाव कहां है? (सड़क, क्षेत्र, लैंडमार्क)'}
-              className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50"
-            />
-          </div>
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Leakage Location' : 'रिसाव स्थान'}
+          />
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Water pipe burst on main road, water flowing on street since morning...' : 'जैसे मुख्य सड़क पर पानी की पाइप फट गई...'}
-              className="w-full h-36 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            />
-            <p className="text-xs text-slate-400 mt-1">{lang === 'en' ? 'Minimum 10 characters' : 'कम से कम 10 अक्षर'}</p>
-          </div>
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? LEAKAGE_REASONS : LEAKAGE_REASONS_HI}
+            placeholder={lang === 'en' ? 'Select leakage type...' : 'रिसाव का प्रकार चुनें...'}
+            label={lang === 'en' ? 'Type of Leakage' : 'रिसाव का प्रकार'}
+            disabled={submitting}
+            icon={Droplets}
+          />
 
         </div>
 
         <div className="p-6 border-t border-slate-100 bg-slate-50">
           <button
             onClick={handleSubmit}
-            disabled={!description || description.length < 10 || submitting}
+            disabled={!description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {submitting ? (

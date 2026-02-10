@@ -14,6 +14,8 @@ async function main() {
     data: {
       mobile: '+919028432689',
       name: 'Aditya Kumar',
+      address: 'Flat 12, Green Valley Society, Kothrud',
+      cityWard: 'Pune - Ward 8',
       role: 'CITIZEN',
     },
   });
@@ -22,6 +24,8 @@ async function main() {
     data: {
       mobile: '+919999888877',
       name: 'Rahul Sharma',
+      address: '45, Shivaji Nagar, Near Station Road',
+      cityWard: 'Pune - Ward 3',
       role: 'CITIZEN',
     },
   });
@@ -42,6 +46,11 @@ async function main() {
         userId: user1.id,
         type: 'WATER',
         consumerNumber: '5566778899',
+      },
+      {
+        userId: user1.id,
+        type: 'GAS',
+        consumerNumber: '900284326890',
       },
     ],
   });

@@ -1,9 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, MapPin, Send, Loader2, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Send, Loader2, CheckCircle, Trash2 } from 'lucide-react';
 import { wasteAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const BULK_WASTE_TYPES = [
+  { value: 'Old furniture (sofa, bed, table, chairs)', label: 'Old furniture' },
+  { value: 'Construction debris and rubble', label: 'Construction debris' },
+  { value: 'Garden waste (fallen tree, branches, leaves)', label: 'Garden waste' },
+  { value: 'Old appliances (fridge, washing machine, AC)', label: 'Old appliances' },
+  { value: 'Electronic waste (TV, computer, monitors)', label: 'Electronic waste' },
+  { value: 'Mattresses and old bedding', label: 'Mattresses and bedding' },
+  { value: 'Renovation waste (tiles, pipes, fittings)', label: 'Renovation waste' },
+  { value: 'Mixed bulk household waste', label: 'Mixed bulk household waste' },
+];
+
+const BULK_WASTE_TYPES_HI = [
+  { value: 'पुराना फर्नीचर (सोफा, बिस्तर, मेज, कुर्सियां)', label: 'पुराना फर्नीचर' },
+  { value: 'निर्माण मलबा और मलबा', label: 'निर्माण मलबा' },
+  { value: 'बगीचे का कचरा (गिरा पेड़, शाखाएं, पत्तियां)', label: 'बगीचे का कचरा' },
+  { value: 'पुराने उपकरण (फ्रिज, वॉशिंग मशीन, AC)', label: 'पुराने उपकरण' },
+  { value: 'इलेक्ट्रॉनिक कचरा (TV, कंप्यूटर, मॉनिटर)', label: 'इलेक्ट्रॉनिक कचरा' },
+  { value: 'गद्दे और पुराने बिस्तर', label: 'गद्दे और बिस्तर' },
+  { value: 'नवीनीकरण कचरा (टाइल्स, पाइप, फिटिंग्स)', label: 'नवीनीकरण कचरा' },
+  { value: 'मिश्रित बड़ा घरेलू कचरा', label: 'मिश्रित बड़ा घरेलू कचरा' },
+];
 
 const BulkPickup = () => {
   const navigate = useNavigate();
@@ -14,7 +38,7 @@ const BulkPickup = () => {
   const [success, setSuccess] = useState(null);
 
   const handleSubmit = async () => {
-    if (!address || address.length < 10 || !description || description.length < 5) return;
+    if (!address || !description) return;
     setSubmitting(true);
     try {
       const response = await wasteAPI.requestBulkPickup({ address, description });
@@ -57,26 +81,25 @@ const BulkPickup = () => {
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col">
         <div className="p-6 flex-1 flex flex-col gap-6">
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              <MapPin size={14} className="inline mr-1" />
-              {lang === 'en' ? 'Pickup Address' : 'पिकअप पता'}
-            </label>
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'Enter full address with landmark (min 10 chars)...' : 'पूरा पता लैंडमार्क के साथ दर्ज करें...'}
-              className="w-full h-24 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Waste Description' : 'कचरा विवरण'}
-            </label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Old furniture, construction debris, garden waste...' : 'जैसे पुराना फर्नीचर, निर्माण मलबा, बगीचे का कचरा...'}
-              className="w-full h-28 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50" />
-          </div>
+          <LocationPicker
+            value={address}
+            onChange={setAddress}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Pickup Address' : 'पिकअप पता'}
+          />
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? BULK_WASTE_TYPES : BULK_WASTE_TYPES_HI}
+            placeholder={lang === 'en' ? 'Select waste type...' : 'कचरे का प्रकार चुनें...'}
+            label={lang === 'en' ? 'Waste Type' : 'कचरे का प्रकार'}
+            disabled={submitting}
+            icon={Trash2}
+          />
         </div>
         <div className="p-6 border-t border-slate-100 bg-slate-50">
-          <button onClick={handleSubmit} disabled={!address || address.length < 10 || !description || description.length < 5 || submitting}
+          <button onClick={handleSubmit} disabled={!address || !description || submitting}
             className="w-full py-4 rounded-xl bg-[#1e3a8a] text-white font-bold text-lg shadow-lg active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2">
             {submitting ? (<><Loader2 className="animate-spin" size={20} /> {lang === 'en' ? 'Submitting...' : 'सबमिट हो रहा है...'}</>) : (<><Send size={20} /> {lang === 'en' ? 'Submit Request' : 'अनुरोध सबमिट करें'}</>)}
           </button>

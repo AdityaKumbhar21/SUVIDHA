@@ -1,8 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Send, Loader2 } from 'lucide-react';
+import { ChevronLeft, Send, Loader2 } from 'lucide-react';
 import { electricityAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import LocationPicker from '../../../components/forms/LocationPicker';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const OUTAGE_REASONS = [
+  { value: 'Complete power outage in the area since several hours', label: 'Complete power outage in the area' },
+  { value: 'Frequent power cuts and voltage fluctuations', label: 'Frequent power cuts / voltage fluctuations' },
+  { value: 'Transformer failure or sparking', label: 'Transformer failure / sparking' },
+  { value: 'Fallen electric pole or wire on road', label: 'Fallen electric pole / wire on road' },
+  { value: 'Partial outage - some houses have power, some do not', label: 'Partial outage - some houses affected' },
+  { value: 'Scheduled maintenance not restored on time', label: 'Scheduled maintenance not restored' },
+  { value: 'Street lights not working in the area', label: 'Street lights not working' },
+  { value: 'Other power supply issue', label: 'Other power supply issue' },
+];
+
+const OUTAGE_REASONS_HI = [
+  { value: 'Complete power outage in the area since several hours', label: 'क्षेत्र में पूर्ण बिजली कटौती' },
+  { value: 'Frequent power cuts and voltage fluctuations', label: 'बार-बार बिजली कटौती / वोल्टेज उतार-चढ़ाव' },
+  { value: 'Transformer failure or sparking', label: 'ट्रांसफॉर्मर खराबी / चिंगारी' },
+  { value: 'Fallen electric pole or wire on road', label: 'बिजली का खंभा / तार सड़क पर गिरा' },
+  { value: 'Partial outage - some houses have power, some do not', label: 'आंशिक कटौती - कुछ घरों में बिजली नहीं' },
+  { value: 'Scheduled maintenance not restored on time', label: 'निर्धारित रखरखाव के बाद बिजली बहाल नहीं' },
+  { value: 'Street lights not working in the area', label: 'स्ट्रीट लाइट काम नहीं कर रहीं' },
+  { value: 'Other power supply issue', label: 'अन्य बिजली आपूर्ति समस्या' },
+];
 
 const OutageComplaint = () => {
   const navigate = useNavigate();
@@ -57,31 +81,27 @@ const OutageComplaint = () => {
         
         {/* 1. Location Input */}
         <div className="bg-slate-50 p-4 border-b border-slate-100">
-          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-            <MapPin size={14} className="inline mr-1" />
-            {lang === 'en' ? 'Affected Location' : 'प्रभावित स्थान'}
-          </label>
-          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} disabled={submitting}
-            placeholder={lang === 'en' ? 'Enter area, ward, street' : 'क्षेत्र, वार्ड, सड़क दर्ज करें'}
-            className="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-base font-medium focus:border-[#1e3a8a] focus:outline-none disabled:opacity-50" />
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            disabled={submitting}
+            lang={lang}
+            label={lang === 'en' ? 'Affected Location' : 'प्रभावित स्थान'}
+          />
         </div>
 
         {/* 2. Complaint Input Area */}
         <div className="p-6 flex-1 flex flex-col gap-6">
 
-          {/* Text Area */}
-          <div className="relative">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
-            </label>
-            <textarea 
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? "Or type your complaint here..." : "या यहां अपनी शिकायत टाइप करें..."}
-              className="w-full h-32 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            ></textarea>
-          </div>
+          {/* Dropdown for issue type */}
+          <DescriptionPicker
+            value={description}
+            onChange={setDescription}
+            options={lang === 'en' ? OUTAGE_REASONS : OUTAGE_REASONS_HI}
+            placeholder={lang === 'en' ? '-- Select Issue Type --' : '-- समस्या का प्रकार चुनें --'}
+            label={lang === 'en' ? 'Describe the Issue' : 'समस्या का वर्णन करें'}
+            disabled={submitting}
+          />
 
         </div>
 

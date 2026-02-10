@@ -1,5 +1,5 @@
 const prisma = require('../lib/prisma');
-const { createPaymentIntent, constructWebhookEvent } = require('../services/stripe');
+const { createPaymentIntent, constructWebhookEvent, confirmStripePayment } = require('../services/stripe');
 const { sendNotification } = require('../services/twilio');
 const { z } = require('zod');
 const { generateReceipt } = require('../services/receipt');
@@ -82,6 +82,14 @@ async function confirmPayment(req, res, next) {
           stripePaymentIntentId: payment.stripePaymentIntentId,
         },
       });
+    }
+
+    // Actually confirm the payment on Stripe using a test payment method
+    try {
+      await confirmStripePayment(paymentIntentId);
+    } catch (stripeErr) {
+      console.error('Stripe confirmation failed:', stripeErr.message);
+      return res.status(400).json({ message: 'Payment confirmation failed with Stripe: ' + stripeErr.message });
     }
 
     // Mark payment as SUCCESS
@@ -176,7 +184,7 @@ async function stripeWebhook(req, res) {
 
   try {
     
-    const event = constructWebhookEvent(req.rawBody, sig);
+    const event = constructWebhookEvent(req.body, sig);
 
     
     if (!event?.data?.object) {

@@ -60,12 +60,13 @@ const Login = () => {
             localStorage.setItem('userPhone', '+91' + mobile);
             
             // Check if profile is complete
-            if (response.data.isProfileComplete) {
+            if (response.data.isProfileComplete && response.data.user?.name) {
               // Existing user with complete profile → show confirmation
               setUserData(response.data.user);
               setStep(3);
             } else {
               // New user or incomplete profile → go to profile creation
+              // Profile creation page will fetch and pre-fill any existing data
               navigate('/auth/create-profile');
             }
           } else {

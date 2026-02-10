@@ -52,7 +52,7 @@ async function sendOtp(mobile) {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpHash = await bcrypt.hash(otp, 10);
-
+  console.log(otp);
   await prisma.otp.deleteMany({ where: { mobile: cleanMobile } });
 
   await prisma.otp.create({

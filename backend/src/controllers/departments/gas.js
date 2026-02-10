@@ -10,7 +10,7 @@ const ComplaintType = {
   LEAKAGE: 'LEAKAGE',
   BILLING: 'BILLING',
   CYLINDER: 'GENERAL',
-  NEW_CONNECTION: 'GENERAL',
+  NEW_CONNECTION: 'NEW_CONNECTION',
 };
 
 
@@ -38,7 +38,9 @@ const bookCylinderSchema = z.object({
 });
 
 const mobileSchema = z.object({
-  mobile: z.string().regex(/^\d{10}$/),
+  mobile: z.string()
+    .regex(/^\+?\d{10,13}$/, 'Invalid mobile number')
+    .transform((val) => (val.startsWith('+') ? val : `+91${val}`)),
 });
 
 

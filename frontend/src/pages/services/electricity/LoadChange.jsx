@@ -4,6 +4,31 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, Send, Loader2, CheckCircle } from 'lucide-react';
 import { electricityAPI } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import DescriptionPicker from '../../../components/forms/DescriptionPicker';
+
+const LOAD_CHANGE_REASONS = [
+  { value: 'Adding air conditioner or heavy appliances', label: 'Adding air conditioner / heavy appliances' },
+  { value: 'Expanding home office setup', label: 'Expanding home office setup' },
+  { value: 'New construction or renovation', label: 'New construction / renovation' },
+  { value: 'Starting home business', label: 'Starting home business' },
+  { value: 'Installing EV charger', label: 'Installing EV charger' },
+  { value: 'Reducing load to save costs', label: 'Reducing load to save costs' },
+  { value: 'Shifting to smaller premises', label: 'Shifting to smaller premises' },
+  { value: 'Commercial to residential conversion', label: 'Commercial to residential conversion' },
+  { value: 'Other reason', label: 'Other reason' },
+];
+
+const LOAD_CHANGE_REASONS_HI = [
+  { value: 'Adding air conditioner or heavy appliances', label: 'एयर कंडीशनर / भारी उपकरण जोड़ना' },
+  { value: 'Expanding home office setup', label: 'होम ऑफिस का विस्तार' },
+  { value: 'New construction or renovation', label: 'नया निर्माण / नवीनीकरण' },
+  { value: 'Starting home business', label: 'घरेलू व्यवसाय शुरू करना' },
+  { value: 'Installing EV charger', label: 'EV चार्जर लगाना' },
+  { value: 'Reducing load to save costs', label: 'लागत बचाने के लिए लोड कम करना' },
+  { value: 'Shifting to smaller premises', label: 'छोटे परिसर में शिफ्ट होना' },
+  { value: 'Commercial to residential conversion', label: 'वाणिज्यिक से आवासीय परिवर्तन' },
+  { value: 'Other reason', label: 'अन्य कारण' },
+];
 
 const LoadChange = () => {
   const navigate = useNavigate();
@@ -97,18 +122,14 @@ const LoadChange = () => {
             </div>
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-              {lang === 'en' ? 'Reason for Change' : 'परिवर्तन का कारण'}
-            </label>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              disabled={submitting}
-              placeholder={lang === 'en' ? 'e.g. Adding air conditioner, expanding home office...' : 'जैसे एयर कंडीशनर जोड़ना, होम ऑफिस विस्तार...'}
-              className="w-full h-28 bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-lg font-medium focus:border-[#1e3a8a] focus:outline-none resize-none disabled:opacity-50"
-            />
-          </div>
+          <DescriptionPicker
+            value={reason}
+            onChange={setReason}
+            options={lang === 'en' ? LOAD_CHANGE_REASONS : LOAD_CHANGE_REASONS_HI}
+            placeholder={lang === 'en' ? '-- Select Reason --' : '-- कारण चुनें --'}
+            label={lang === 'en' ? 'Reason for Change' : 'परिवर्तन का कारण'}
+            disabled={submitting}
+          />
 
         </div>
 

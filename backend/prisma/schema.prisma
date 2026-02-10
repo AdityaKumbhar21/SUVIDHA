@@ -43,6 +43,8 @@ enum ComplaintType {
   OVERFLOW
   CERTIFICATE
   GENERAL
+  NEW_CONNECTION
+  LOAD_CHANGE
 }
 
 enum ComplaintStatus {

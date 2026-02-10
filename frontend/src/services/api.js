@@ -127,12 +127,8 @@ export const electricityAPI = {
   },
 
   // Request new connection
-  requestNewConnection: (formData) => {
-    return api.post('/electricity/requests/new-connection', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  requestNewConnection: (data) => {
+    return api.post('/electricity/requests/new-connection', data);
   },
 };
 
@@ -173,12 +169,8 @@ export const waterAPI = {
   },
 
   // Request new connection
-  requestNewConnection: (formData) => {
-    return api.post('/water/requests/new-connection', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  requestNewConnection: (data) => {
+    return api.post('/water/requests/new-connection', data);
   },
 };
 
@@ -214,12 +206,8 @@ export const gasAPI = {
   },
 
   // Request new connection
-  requestNewConnection: (formData) => {
-    return api.post('/gas/requests/new-connection', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  requestNewConnection: (data) => {
+    return api.post('/gas/requests/new-connection', data);
   },
 
   // Book cylinder
